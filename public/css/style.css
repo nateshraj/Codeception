@@ -1,0 +1,109 @@
+/* .navbar-nav li a,
+.navbar-brand {
+  color: rgb(71, 216, 71);
+} */
+
+
+/* .navbar-nav li a:hover {
+  color: grey;
+ } */
+
+ /* #navbarContainer a {
+  color: rgb(71, 216, 71);
+ } */
+ #navbarContainer a:hover {
+  color: #23CE6B;
+/* background-color: #23CE6B; */
+}
+
+
+#homeRow, #aboutRow {
+  /* height: 92vh; */
+  /* height: 92vh; */
+}
+
+.navbar {
+  border-bottom: rgba(35, 206, 107, 0.8) 2px solid;
+  background-color: #272D2D;
+  /* border-bot */
+  /* opacity: 0.8; */
+}
+
+/* #homeSection {
+ background: url('../img/test.jpg');
+ background-repeat: no-repeat;
+ background-size: cover;
+ background-attachment: fixed;
+ min-height: 571px;
+} */
+
+body {
+  background-color: #272D2D;
+ /* background-color: #181D27; */
+ /* background-color: black; */
+}
+
+/* html.fp-enabled body {
+  margin-top: 50px;
+} */
+
+/* .fp-tableCell {
+  height: 50vh;
+} */
+
+/* .content{
+  margin:50px
+} */
+
+/* #bodyId {
+  background-color: white;
+} */
+
+#problemName {
+  font-size: 31.5px;
+}
+
+#homeCard, #contactCard, #resetCard {
+  background: #23CE6B;
+/* background: #7AE582; */
+}
+
+.nav-pills {
+  background: #EDF5FC;
+}
+
+#welcomeText {
+ font-size: 25px;
+}
+
+#editor {
+ height: 75vh;
+ /* width: 50vw; */
+}
+
+#problemCard {
+  border: none;
+}
+
+#aboutImage {
+  height: 93vh;
+}
+
+.border-danger {
+  border-width:2px !important;
+}
+
+#navbarDropdown a:hover {
+  color: inherit;
+}
+
+#profileImage {
+  height: 5rem;
+  width: 5rem;
+}
+
+/* #profileImage {
+  height: auto;
+  width: auto;
+} */
+

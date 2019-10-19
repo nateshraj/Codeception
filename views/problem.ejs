@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr"
+    crossorigin="anonymous">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"
+    crossorigin="anonymous">
+  <link rel="stylesheet" href="/css/style.css">
+  <title>Problem | Codeception</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.3/ace.js" type="text/javascript"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.3/ext-language_tools.js" type="text/javascript"></script>
+  <!-- <style type="text/css">
+    #editor {
+      position: absolute;
+      top: 50px;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      height: 500px;
+      width: auto;
+    }
+  </style> -->
+</head>
+
+<body>
+
+  <!--Navbar starts-->
+  <!-- <nav class="navbar navbar-expand-sm p-1 navbar-light" id="navbar">
+    <div class="container" id="navbarContainer">
+      <a href="index.html" class="navbar-brand">Codeception</a>
+      <button class="navbar-toggler" data-toggle="collapse" data-target="#navbar">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse">
+        <ul class="navbar-nav ml-auto">
+          <li class="nav-item mr-4">
+            <a href="#" class="nav-link active">Dashboard</a>
+          </li>
+          <li class="nav-item dropdown">
+            <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">
+              <i class="far fa-user"></i>
+              <span class="ml-1">Username</span>
+            </a>
+            <div class="dropdown-menu">
+              <a href="#" class="dropdown-item">My Profile</a>
+              <a href="#" class="dropdown-item">Logout</a>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav> -->
+  <!--Navbar ends-->
+
+  <!--Navbar starts-->
+  <%- include('./includes/navigation.ejs') %>
+  <!--Navbar ends-->
+
+  <!--Main Section starts-->
+  <!-- <section id="codeSection">
+    <div class="container">
+
+
+      <div class="row">
+        <div class="col-sm-6">
+
+        </div>
+        <div class="col-sm-6">
+          <form>
+            <div class="form-group">
+              <textarea name="" id="" cols="90" rows="22" class="form-control">
+
+              </textarea>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </section> -->
+  <!--Main Section ends-->
+
+
+  <section>
+
+    <div class="row mr-auto pt-3">
+
+
+      <div class="col-sm-6 pl-4 pt-5">
+        <span id="problemName" class="text-white"><%= problem.name %></span>
+        <div class="card rounded-0 border-dark">
+          <div class="card-body">
+            <span><%= problem.description %></</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-sm-6 pr-2 pt-5">
+
+        <!-- Normal select incase unable to read text from button -->
+        <!-- <div class="form-group">
+            <select class="form-control">
+              <option selected>Javscript</option>
+              <option>Python</option>
+              <option>Java</option>
+            </select>
+          </div> -->
+
+        <div class="btn-group">
+          <span class="mt-1 text-white">Choose your weapon</span>
+          <a href="#" class="ml-2 btn btn-sm btn-light dropdown-toggle rounded" data-toggle="dropdown" id="languageButton">
+            <span>Javascript</span>
+          </a>
+          <ul class="dropdown-menu" id="languageDropDown">
+            <li>
+              <a href="#" class="dropdown-item">Javascript</a>
+            </li>
+            <li>
+              <a href="#" class="dropdown-item">Python</a>
+            </li>
+            <li>
+              <a href="#" class="dropdown-item">Java</a>
+            </li>
+          </ul>
+        </div>
+
+
+        <div class="d-md-none text-center mt-3">
+          <a class="btn btn-light" href="#" data-toggle="modal" data-target="#revertCodeModal">
+              <i class="fas fa-history"></i>
+              Revert
+          </a>
+          <form action="/run-code" method="POST" class="d-inline">
+            <textarea style="display: none;" name="editorContent" id="mobileEditorContent"></textarea>
+            <button type="submit" class="btn btn-success">
+              <i class="fas fa-play-circle"></i>
+              Run
+            </button>
+          </form>
+          <form action="/submit-code" method="POST" class="d-inline">
+            <textarea style="display: none;" name="editorContent" id="mobileEditorContent"></textarea>
+            <button type="submit" class="btn btn-light">
+              Submit
+            </button>
+          </form>
+          <br>
+        </div>
+        <div class="d-none d-md-inline">
+          <form action="/submit-code" method="POST" class="d-inline">
+            <input type="hidden" name="problemId" value="<%= problem._id %>">
+            <textarea style="display: none;" name="editorContent" id="desktopEditorContent"></textarea>
+            <button type="submit" class="btn btn-light float-right">
+              Submit
+            </button>
+          </form>
+          <form action="/run-code" method="POST" class="d-inline">
+            <input type="hidden" name="problemId" value="<%= problem._id %>">
+            <textarea style="display: none;" name="editorContent" id="desktopEditorContent"></textarea>
+            <button type="submit" class="btn btn-success float-right">
+              <i class="fas fa-play-circle"></i>
+              Run
+            </button>
+          </form>
+          <a class="btn btn-light float-right" href="#" data-toggle="modal" data-target="#revertCodeModal">
+              <i class="fas fa-history"></i>
+              Revert
+          </a>          
+        </div>
+
+
+
+
+
+
+
+
+        <!-- <form action="/run-code" method="POST" id="runCodeForm">
+          <textarea style="display: none;" name="editorContent" id="editorContent"></textarea>
+          <button type="submit" class="btn btn-success float-right" id="runCodeButton">
+            <i class="fas fa-play-circle"></i>
+            Run Code
+          </button>
+        </form> -->
+
+    
+        <!-- <a href="#" class="btn btn-success float-right">
+          <i class="fas fa-play-circle"></i>
+          Run Code
+        </a> -->
+
+        
+        <div id="editor" class="w-auto mt-3"><%= startingCode %></div>
+
+
+
+      </div>
+
+    </div>
+
+    
+  </section>
+
+
+  
+
+  <% if (mode === 'run') { %>
+  <br><br>
+  <section>
+    <div class="container">
+      <div class="alert alert-<%= testCase.output === actualOutput ? 'success' : 'danger' %> alert-dismissible fade show" role="alert">
+        <h4 class="alert-heading">Sample Test Case</h4>
+        <hr>
+        <form>
+          <fieldset disabled>
+            <div class="form-group">
+              <label>Input</label>
+              <input type="text" class="form-control" value="<%= testCase.input %>">
+            </div>
+            <div class="form-group">
+                <label>Your Output</label>
+                <input type="text" class="form-control" value="<%= actualOutput %>">
+            </div>
+            <div class="form-group">
+                <label>Expected Output</label>
+                <input type="text" class="form-control" value="<%= testCase.output %>">
+            </div>
+          </fieldset>
+        </form>          
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+    </div>    
+  </section>
+  <% } else if (mode === 'submit') { %>
+    <br><br>
+    <section>
+      <div class="container">
+        <div class="alert <%= results.every(result => result === true) ? 'alert-success' : 'alert-danger' %> alert-dismissible fade show" role="alert">
+          <h4 class="alert-heading">Test Case Results</h4>
+          <hr>
+          <% results.forEach((result, index) => { %>
+            <button type="button" class="btn btn-lg <%= result ? 'btn-success' : 'btn-danger' %>" disabled>
+              Test Case <%= index %>
+              <i class="<%= result ? 'fas fa-check-circle' : 'fas fa-times-circle' %>"></i>
+            </button>
+          <% }) %>
+          
+          <% if (results.every(result => result === true)) { %>
+            <hr>
+            <h6>Congratulations! Your submission has been saved.</h6>
+          <% } else { %>
+            <hr>
+            <h6>Oops! Please try again.</h6>
+          <% } %>
+  
+          <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+      </div>    
+    </section>
+
+
+  <% } %>
+
+
+  
+
+
+
+
+
+
+  <!--Revert Code modal starts-->
+  <div class="modal" id="revertCodeModal">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-body text-center">
+            All your code will be discarded. Are you sure?<br><br>
+            <a href="#" class="btn btn-danger" data-dismiss="modal">Cancel</a>
+            <a href="/problem/<%= problem._id %>" class="btn btn-success">Revert</a>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!--Revert Code modal ends-->
+
+
+
+
+  <!--Need to add footer containing copyright below-->
+
+  <!-- <script>
+    var editor = ace.edit("editor");
+    let editorReference = editor;
+    editor.setTheme('ace/theme/monokai');
+    editor.session.setMode("ace/mode/javascript");
+    editor.session.setTabSize(2);
+    document.getElementById('editor').style.fontSize = '16px';
+    editor.setOptions({
+      enableBasicAutocompletion: true,
+      // enableSnippets: true,
+      enableLiveAutocompletion: true
+    });
+  </script> -->
+
+  <script src="http://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+    crossorigin="anonymous"></script>
+
+  <script>
+    $("#languageDropDown li a").click(function () {
+      var selText = $(this).text();
+      $(this).parents('.btn-group').find('.dropdown-toggle').html(selText + ' <span class="caret"></span>');
+    });
+  </script>
+
+  <script>
+    var editor = ace.edit("editor");
+    let editorReference = editor;
+    editor.setTheme('ace/theme/textmate');
+    editor.session.setMode("ace/mode/javascript");
+    editor.session.setTabSize(2);
+    document.getElementById('editor').style.fontSize = '16px';
+    editor.setOptions({
+      enableBasicAutocompletion: true,
+      // enableSnippets: true,
+      enableLiveAutocompletion: true
+    });
+
+    // Not required as of now
+    // $('*#desktopEditorContent').each(function () {
+    //   $(this).val(editor.getSession().getValue());
+    // });
+    // var mobileTextarea = $('#mobileEditorContent');
+    
+    // mobileTextarea.val(editor.getSession().getValue());
+    // editor.getSession().on("change", function () {
+    //   desktopTextarea.val(editor.getSession().getValue());
+    //   mobileTextarea.val(editor.getSession().getValue());
+    // });
+
+
+
+    var desktopTextarea = $('*#desktopEditorContent');
+    var mobileTextarea = $('*#mobileEditorContent');
+    desktopTextarea.val(editor.getSession().getValue());
+    mobileTextarea.val(editor.getSession().getValue());
+    editor.getSession().on("change", function () {
+      desktopTextarea.val(editor.getSession().getValue());
+      mobileTextarea.val(editor.getSession().getValue());
+    });
+
+  </script>
+
+  <script>
+    var screenHeight = $(window).height();
+    var editor1 = $('#editor');
+    var editorHeight = editor1.offset().top + 10;
+
+    editor1.css({
+      'height': screenHeight - editorHeight + 'px',
+    });
+
+    $(window).resize(function () {
+      screenHeight = $(window).height();
+      editor1.css({
+        'height': screenHeight - editorHeight + 'px',
+      });
+    });
+  </script>
+
+
+  
+
+  <script src="http://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+    crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+    crossorigin="anonymous"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+    crossorigin="anonymous"></script>
+</body>
+
+</html>

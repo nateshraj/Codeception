@@ -1,0 +1,39 @@
+<nav class="navbar navbar-expand-sm navbar-dark p-1 fixed-top" id="mainNavbar">
+  <div class="container" id="navbarContainer">
+    <a href="/" class="navbar-brand">Codeception</a>
+    <button class="navbar-toggler" data-toggle="collapse" data-target="#navbar">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbar">
+      <ul class="navbar-nav ml-auto">
+        <% if (isLoggedIn) { %>
+          <li class="nav-item mr-4">
+            <a href="/dashboard" class="nav-link active">Dashboard</a>
+          </li>
+          <li class="nav-item dropdown">
+            <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">
+              <i class="far fa-user"></i>
+              <span class="ml-1"><%= user.username %></span>
+            </a>
+            <div class="dropdown-menu" id="navbarDropdown">
+              <a href="/profile" class="dropdown-item">My Profile</a>
+              <form action="/logout" method="POST">
+                <button type="submit" class="dropdown-item">Logout</button>
+              </form>
+            </div>
+          </li>
+        <% } else { %>
+          <li class="nav-item mr-4">
+            <a href="#homeSection" class="nav-link">Home</a>
+          </li>
+          <li class="nav-item mr-4">
+            <a href="#aboutSection" class="nav-link">About</a>
+          </li>
+          <li class="nav-item">
+            <a href="#contactSection" class="nav-link">Contact</a>
+          </li>
+        <% } %>
+      </ul>
+    </div>
+  </div>
+</nav>

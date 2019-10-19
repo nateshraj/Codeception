@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr"
+    crossorigin="anonymous">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"
+    crossorigin="anonymous">
+  <link rel="stylesheet" href="/css/style.css">
+  <title>
+    <%= pageTitle %>
+  </title>
+</head>
+
+<body>
+
+  <!--Navbar starts-->
+  <%- include('./includes/navigation.ejs') %>
+  <!--Navbar ends-->
+
+  <!--Main Section starts-->
+  <section id="mainSection">
+    <div class="container mt-5 p-4">
+      <p class="text-white text-center" id="welcomeText">Problem Solving</p>
+
+
+      <!-- List styled starts -->
+      <!-- <div class="card border-success mt-4 text-center">
+          <div class="card-header">
+            <h5 class="card-title d-inline">My Submissions</h5>
+          </div>
+          <div class="card-body">
+            <p class="card-text lead">
+              <ul class="list-group">
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                  <span class="float-left">Fibonacci Series</span>
+                  <span class="badge badge-primary badge-pill">Javascript</span>
+                  <span class="badge badge-primary badge-pill">10</span>
+                </li>
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                  Dapibus ac facilisis in
+                  <span class="badge badge-primary badge-pill">2</span>
+                </li>
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                  Morbi leo risus
+                  <span class="badge badge-primary badge-pill">1</span>
+                </li>
+              </ul>
+            </p>
+          </div>
+        </div> -->
+        <!-- List styled ends -->
+
+
+
+      <!-- Hardcoded list starts -->
+      <!-- <div class="row">
+        <div class="col-sm-6">
+          <div class="card border-success">
+            <div class="card-header border-success">
+              <h5 class="card-title mb-0">Special title treatment</h5>
+            </div>
+            <div class="card-body">
+              <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
+              <a href="#" class="btn btn-success">Solve</a>
+            </div>
+          </div>
+        </div>
+        <div class="col-sm-6">
+          <div class="card border-warning">
+            <div class="card-header border-warning">
+              <h5 class="card-title mb-0">Special title treatment</h5>
+            </div>
+            <div class="card-body">
+              <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
+              <a href="#" class="btn btn-warning">Solve</a>
+            </div>
+          </div>
+        </div>
+      </div> -->
+      <!-- Hardcoded list ends -->
+
+      
+      
+      <% for (let i = 0; i < problems.length; i++)  { %>
+        <% if (i % 2 === 0) { %>
+          <div class="row">
+            <div class="col-sm-6">
+              <div class="card border-success">
+                <div class="card-header border-success">
+                  <h5 class="card-title mb-0"><%= problems[i].name %></h5>
+                </div>
+                <div class="card-body">
+                  <p class="card-text"><%= problems[i].description %></p>
+                  <a href="/problem/<%= problems[i]._id %>" class="btn btn-success">Solve</a>
+                </div>
+              </div>
+            </div>          
+        <% } else { %>
+          <div class="col-sm-6">
+            <div class="card border-warning">
+              <div class="card-header border-warning">
+                <h5 class="card-title mb-0"><%= problems[i].name %></h5>
+              </div>
+              <div class="card-body">
+                <p class="card-text"><%= problems[i].description %></p>
+                <a href="/problem/<%= problems[i]._id %>" class="btn btn-warning">Solve</a>
+              </div>
+            </div>
+          </div>
+        </div>
+        <% } %>
+        <br>
+      <% } %>  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      <!-- <div class="row">
+        <div class="col-sm-6">
+          <div class="card border-success">
+            <div class="card-header border-success">
+              <h5 class="card-title mb-0">Special title treatment</h5>
+            </div>
+            <div class="card-body">
+              <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
+              <a href="#" class="btn btn-success">Solve</a>
+            </div>
+          </div>
+        </div>
+        <div class="col-sm-6">
+          <div class="card border-warning">
+            <div class="card-header border-warning">
+              <h5 class="card-title mb-0">Special title treatment</h5>
+            </div>
+            <div class="card-body">
+              <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
+              <a href="#" class="btn btn-warning">Solve</a>
+            </div>
+          </div>
+        </div>
+      </div> -->
+
+
+
+
+
+
+    </div>
+  </section>
+  <!--Main Section ends-->
+
+
+
+
+
+  <!--Need to add footer containing copyright below-->
+
+
+  <script src="http://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+    crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+    crossorigin="anonymous"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+    crossorigin="anonymous"></script>
+</body>
+
+</html>
