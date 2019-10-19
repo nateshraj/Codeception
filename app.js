@@ -43,7 +43,7 @@ app.use(codeRoutes);
 
 (async function () {
   try {
-    await mongoose.connect(process.env.MONGODB_URI, { useNewUrlParser: true, useCreateIndex: true });
+    await mongoose.connect(process.env.MONGODB_URI, { useNewUrlParser: true, useCreateIndex: true, useUnifiedTopology: true });
     await app.listen(process.env.PORT || 3000);
     console.log(`Listening on port ${process.env.PORT}`);
   }
