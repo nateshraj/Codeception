@@ -24,6 +24,9 @@
   <!--Main Section starts-->
   <section id="mainSection">
     <div class="container mt-5 p-4">
+      <% if (!user.isVerified) { %>
+        <%- include('./includes/email-alert.ejs') %>
+      <% } %>
       <p class="text-white text-center" id="welcomeText">Problem Solving</p>
 
 

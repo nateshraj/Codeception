@@ -13,7 +13,8 @@ exports.postSignup = async (req, res, next) => {
       return res.status(422).render('index', {
         pageTitle: 'Codeception',
         activeCard: 'signup',
-        errorMessage: errors.array()[0].msg
+        errorMessage: errors.array()[0].msg,
+        isLoggedIn: req.session.isLoggedIn
       });
     }
     const hashedPassword = await bcrypt.hash(req.body.password, 12);
@@ -22,28 +23,13 @@ exports.postSignup = async (req, res, next) => {
       username: req.body.username,
       email: req.body.email,
       password: hashedPassword,
-      verificationToken: token,
-      verificationTokenExpiration: Date.now() + 3600000
+      verificationToken: token
     });
     await user.save();
     console.log('User has been created');
 
-    //To change the message and provide an activation link to confirm user
-    //Change localhost to hosted place before deploying
-    const message = {
-      to: req.body.email,
-      from: process.env.SENDGRID_FROM_EMAIL,
-      subject: 'Welcome to Codeception',
-      text: `Welcome ${req.body.username}, thanks for signing up dont`,
-      html: `
-        <p><strong>Welcome ${req.body.username}, thanks for signing up!</strong>
-        <br>Please click this link to <a href="http://localhost:3000/verify/${token}"> verify your account.</a>
-        </p>
-        `
-    };
+    sendMail(req.body.email, req.body.username, token, 'verify');
 
-    sendgrid.setApiKey(process.env.SENDGRID_API_KEY);
-    sendgrid.send(message);
     res.render('index', {
       pageTitle: 'Signup Testing',
       activeCard: 'login',
@@ -116,8 +102,7 @@ exports.getVerify = async (req, res, next) => {
   try {
     const verificationToken = req.params.verificationToken;
     const user = await User.findOne({
-      verificationToken: verificationToken,
-      verificationTokenExpiration: { $gt: Date.now() }
+      verificationToken: verificationToken
     });
     if (!user) {
       //Add flash message or do something else
@@ -125,15 +110,19 @@ exports.getVerify = async (req, res, next) => {
     }
     user.isVerified = true;
     user.verificationToken = undefined;
-    user.verificationTokenExpiration = undefined;
     await user.save();
+    req.session.user = user;
 
-    //To change page titles everywhere
-    res.render('index', {
-      pageTitle: 'Signup Testing',
-      activeCard: 'login',
-      isLoggedIn: req.session.isLoggedIn
-    });
+    if (req.session.isLoggedIn) {
+      res.redirect('/dashboard');
+    } else {
+      //To change page titles everywhere
+      res.render('index', {
+        pageTitle: 'Signup Testing',
+        activeCard: 'login',
+        isLoggedIn: req.session.isLoggedIn
+      });
+    }
   }
   catch (e) {
     throw Error(e);
@@ -162,26 +151,11 @@ exports.postReset = async (req, res, next) => {
       throw Error('User not found');
     }
     user.resetToken = resetToken;
-    user.resetTokenExpiration = Date.now() + 3600000;
     await user.save();
     console.log('A mail has been sent to reset your password');
 
-    //To change the message and provide an activation link to reset pass
-    //Change localhost to hosted place before deploying
-    const message = {
-      to: user.email,
-      from: process.env.SENDGRID_FROM_EMAIL,
-      subject: `Reset password for ${user.username}`,
-      text: `Hi ${user.username}, Follow these steps to reset`,
-      html: `
-        <p><strong>Hello ${user.username},</strong>
-        <br>Please click this link to <a href="http://localhost:3000/reset/${resetToken}"> reset your password.</a>
-        </p>
-        `
-    };
+    sendMail(user.email, user.username, resetToken, 'reset');
 
-    sendgrid.setApiKey(process.env.SENDGRID_API_KEY);
-    sendgrid.send(message);
     res.render('index', {
       pageTitle: 'Signup Testing',
       activeCard: 'login',
@@ -196,17 +170,16 @@ exports.getResetPassword = async (req, res, next) => {
   try {
     const resetToken = req.params.resetToken;
     const user = await User.findOne({
-      resetToken: resetToken,
-      resetTokenExpiration: { $gt: Date.now() }
+      resetToken: resetToken
     });
     if (!user) {
       //Add flash message or do something else
-      throw Error('User not found or time expired');
+      throw Error('User not found');
+      // Show an alert to say invalid request and redirect to homepage
     }
 
 
     // user.resetToken = undefined;
-    // user.resetTokenExpiration = undefined;
     // await user.save();
 
     //To change page titles everywhere
@@ -236,17 +209,15 @@ exports.postResetPassword = async (req, res, next) => {
     }
     const user = await User.findOne({
       resetToken: req.body.resetToken,
-      resetTokenExpiration: { $gt: Date.now() },
       _id: req.body.userId
     });
     if (!user) {
       //Add flash message or do something else
-      throw Error('User not found or time expired');
+      throw Error('User not found');
     }
     const hashedPassword = await bcrypt.hash(req.body.password, 12);
     user.password = hashedPassword;
     user.resetToken = undefined;
-    user.resetTokenExpiration = undefined;
     await user.save();
 
     //To change page titles everywhere
@@ -270,6 +241,38 @@ exports.postLogout = async (req, res, next) => {
     throw Error('Unable to logout' + e);
   }
 }
+
+exports.postResendVerification = async (req, res, next) => {
+  sendMail(req.session.user.email, req.session.user.username, req.session.user.verificationToken, 'verify');
+  res.redirect('/problems');
+}
+
+async function sendMail(mailTo, username, token, type) {
+  //To change the message and provide an activation link to confirm user
+  //Change localhost to hosted place before deploying
+  const message = {
+    to: mailTo,
+    from: process.env.SENDGRID_FROM_EMAIL,
+    subject: type === 'reset' ? 'Reset your Codeception password' : 'Welcome to Codeception!',
+    text: type === 'reset' ? `Hi ${username}, Follow these steps to reset` : `Welcome ${username}, thanks for signing up`,
+    html: type === 'reset' ?
+      `
+        <p><strong>Hello ${username},</strong>
+        <br>Please click this link to <a href="http://localhost:3000/reset/${token}"> reset your password.</a>
+        </p>
+    ` :
+      `
+        <p><strong>Welcome ${username}, thanks for signing up!</strong>
+        <br>Please click this link to <a href="http://localhost:3000/verify/${token}"> verify your account.</a>
+        </p>
+        `
+  };
+
+  sendgrid.setApiKey(process.env.SENDGRID_API_KEY);
+  await sendgrid.send(message);
+}
+
+
 
 exports.getDeleteSession = async (req, res, next) => {
   const collection = await mongoose.connection.db.collection('sessions');

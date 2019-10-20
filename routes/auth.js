@@ -67,6 +67,7 @@ router.post(
 
 router.post('/logout', authController.postLogout);
 
+router.post('/resend', authController.postResendVerification);
 
 // Temporaray path to delete all sesssions
 router.get('/delete', authController.getDeleteSession);
