@@ -5,5 +5,3 @@ function sumOfNumbers (n) {
   }
   return sum;
 }
-
-console.log(sumOfNumbers(replace));

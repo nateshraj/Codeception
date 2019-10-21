@@ -82,7 +82,11 @@ exports.postAddProblem = async (req, res, next) => {
 exports.postRunCode = async (req, res, next) => {
   const problem = await Problem.findById(req.body.problemId);
   const testCase = problem.testCases[0];
-  const code = req.body.editorContent.replace('replace', testCase.input);
+  const functioName = req.body.editorContent.split(' ')[1];
+  const code = req.body.editorContent + `\nconsole.log(${functioName}(${testCase.input}));`;
+  console.log('----------------');
+  console.log(code);
+  console.log('----------------');
   const program = {
     script: code,
     language: "nodejs",
@@ -96,7 +100,10 @@ exports.postRunCode = async (req, res, next) => {
     json: program
   });
   console.log(response);
-  const actualOutput = response.output.replace('\n', '');
+  // const actualOutput = response.output.replace('\n', '');
+  let actualOutput = response.output.replace(new RegExp('\n$'), '');
+  // console.log(actualOutput);
+  actualOutput = actualOutput.replace('\n', ' ')
   const result = actualOutput === testCase.output;
   console.log(result);
   res.render('problem', {
@@ -109,49 +116,62 @@ exports.postRunCode = async (req, res, next) => {
     testCase: testCase,
     actualOutput: actualOutput
   });
-
-
-
-
 };
-
 
 
 
 exports.postSubmitCode = async (req, res, next) => {
   const problem = await Problem.findById(req.body.problemId);
-  // const actualOutputs = [];
-  // const expectedOutputs = [];
+  const functioName = req.body.editorContent.split(' ')[1];
+  let code = req.body.editorContent;
+  let functionCalls = '';
   const results = [];
+  const expectedOutputs = [];
+
   for (let testCase of problem.testCases) {
-    // console.log(testCase);
-    // expectedOutputs.push(testCase.output);
-    const code = req.body.editorContent.replace('replace', testCase.input);
-    // console.log(code);
-    const program = {
-      script: code,
-      language: "nodejs",
-      versionIndex: "2",
-      clientId: process.env.CLIENT_ID,
-      clientSecret: process.env.CLIENT_SECRET
-    };
-    const response = await rp({
-      url: process.env.PROGRAM_API,
-      method: "POST",
-      json: program
-    });
-    // console.log(response);
-    const actualOutput = response.output.replace('\n', '');
-    // actualOutputs.push(actualOutput);
-    results.push(actualOutput === testCase.output ? true : false);
-
+    functionCalls += `\nconsole.log(${functioName}(${testCase.input}));`;
+    expectedOutputs.push(testCase.output);
   }
-  // console.log(expectedOutputs);
-  // console.log(actualOutputs);
+
+  code += functionCalls;
+  console.log('@@@@@@@@@@@@@@@@@@');
+  console.log(code);
+  console.log('@@@@@@@@@@@@@@@@@@');
+  const program = {
+    script: code,
+    language: "nodejs",
+    versionIndex: "2",
+    clientId: process.env.CLIENT_ID,
+    clientSecret: process.env.CLIENT_SECRET
+  };
+  const response = await rp({
+    url: process.env.PROGRAM_API,
+    method: "POST",
+    json: program
+  });
+  console.log('###########');
+  console.log(response);
+  console.log('###########');
+
+  let actualOutputs = response.output.replace(new RegExp('\n$'), '');
+  actualOutputs = actualOutputs.split('\n');
+  console.log('&&&&&&&&&&&&&&&');
+  console.log(actualOutputs);
+  console.log('&&&&&&&&&&&&&&&');
+
+  console.log('%%%%%%%%%%%%%');
+  console.log(expectedOutputs);
+  console.log('%%%%%%%%%%%%%');
+
+  if (actualOutputs.length === expectedOutputs.length) {
+    expectedOutputs.forEach((expectedOutput, index) => {
+      results.push(expectedOutput === actualOutputs[index]);
+    })
+  } else {
+    expectedOutputs.forEach(output => results.push(false));
+  }
+
   console.log(results);
-
-  
-
 
   res.render('problem', {
     pageTitle: 'Problem',
@@ -164,26 +184,6 @@ exports.postSubmitCode = async (req, res, next) => {
     actualOutput: '',
     results: results
   });
-
-
-
-
-  // const program = {
-  //   script: req.body.editorContent,
-  //   language: "nodejs",
-  //   versionIndex: "2",
-  //   clientId: process.env.CLIENT_ID,
-  //   clientSecret: process.env.CLIENT_SECRET
-  // };
-  // request({
-  //   url: process.env.PROGRAM_API,
-  //   method: "POST",
-  //   json: program
-  // }, function (error, response, body) {
-  //   console.log('error:', error);
-  //   console.log('statusCode:', response && response.statusCode);
-  //   console.log('body:', body);
-  // });
 
 
 };
