@@ -5,20 +5,12 @@ const rp = require('request-promise-native');
 
 exports.getIndex = (req, res, next) => {
   if (req.session.isLoggedIn) {
-    return res.redirect('/dashboard');
+    return res.redirect('/problems');
   }
   res.render('index', {
     pageTitle: 'Codeception',
     activeCard: 'signup',
     isLoggedIn: req.session.isLoggedIn
-  });
-};
-
-exports.getDashboard = (req, res, next) => {
-  res.render('dashboard', {
-    pageTitle: 'Dashboard',
-    isLoggedIn: req.session.isLoggedIn,
-    user: req.session.user
   });
 };
 
@@ -186,4 +178,12 @@ exports.postSubmitCode = async (req, res, next) => {
   });
 
 
+};
+
+exports.getLeaderboard = (req, res, next) => {
+  res.render('leaderboard', {
+    pageTitle: 'Leaderboard',
+    isLoggedIn: req.session.isLoggedIn,
+    user: req.session.user
+  });
 };

@@ -75,13 +75,8 @@ exports.postLogin = async (req, res, next) => {
       req.session.isLoggedIn = true;
       req.session.user = user;
       console.log('Logged in successfully');
-      // To redirect or render a different page here
-      // res.render('dashboard', {
-      //   pageTitle: 'Dashboard',
-      // });
-      return res.redirect('/dashboard');
 
-
+      return res.redirect('/problems');
     }
     else {
       throw Error('Credentials don\'t match');
@@ -114,7 +109,7 @@ exports.getVerify = async (req, res, next) => {
     req.session.user = user;
 
     if (req.session.isLoggedIn) {
-      res.redirect('/dashboard');
+      res.redirect('/problems');
     } else {
       //To change page titles everywhere
       res.render('index', {

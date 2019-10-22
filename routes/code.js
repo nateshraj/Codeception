@@ -5,8 +5,6 @@ const isAuth = require('../middleware/is-auth');
 
 router.get('/', codeController.getIndex);
 
-router.get('/dashboard', isAuth, codeController.getDashboard);
-
 router.get('/problems', isAuth, codeController.getProblemList);
 
 router.get('/problem/:problemId', isAuth, codeController.getProblem);
@@ -25,5 +23,6 @@ router.post('/submit-code', codeController.postSubmitCode);
 
 router.get('/profile', isAuth, codeController.getProfile);
 
+router.get('/leaderboard', isAuth, codeController.getLeaderboard);
 
 module.exports = router;
