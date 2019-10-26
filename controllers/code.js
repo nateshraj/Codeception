@@ -1,5 +1,6 @@
 const Problem = require('../models/problem');
-const fs = require('fs');
+const User = require('../models/user');
+const fs = require('fs').promises;
 const path = require('path');
 const rp = require('request-promise-native');
 
@@ -17,7 +18,8 @@ exports.getIndex = (req, res, next) => {
 exports.getProblem = async (req, res, next) => {
   const problem = await Problem.findById(req.params.problemId);
   try {
-    const startingCode = await fs.readFileSync(path.join(__dirname, '..', 'problems', `${problem.name}.txt`), 'utf-8');
+    const startingCode = await fs.readFile(path.join(__dirname, '..', 'problems', 'Starting Code', `${problem.name}.txt`), 'utf-8');
+
     res.render('problem', {
       pageTitle: 'Problem',
       isLoggedIn: req.session.isLoggedIn,
@@ -163,6 +165,26 @@ exports.postSubmitCode = async (req, res, next) => {
     expectedOutputs.forEach(output => results.push(false));
   }
 
+  const toSubmit = results.every(result => result);
+  if (toSubmit) {
+    try {
+      await fs.stat(path.join(__dirname, '..', 'problems', 'Submissions', `${req.session.user._id.toString()}`));
+    } catch (e) {
+      if (e.code === 'ENOENT') {
+        await fs.mkdir(path.join(__dirname, '..', 'problems', 'Submissions', `${req.session.user._id.toString()}`));
+      } else {
+        throw Error(e);
+      }
+    }
+    fs.writeFile(path.join(__dirname, '..', 'problems', 'Submissions', `${req.session.user._id.toString()}`, `${problem.name}.txt`), req.body.editorContent);
+    const currentUser = await User.findById(req.session.user._id);
+    if (!currentUser.problems.find(userProblem => userProblem.problemId === problem._id.toString())) {
+      currentUser.problems.push({ problemId: problem._id });
+    }
+    await currentUser.save();
+    req.session.user = currentUser;
+  }
+
   console.log(results);
 
   res.render('problem', {
@@ -186,4 +208,21 @@ exports.getLeaderboard = (req, res, next) => {
     isLoggedIn: req.session.isLoggedIn,
     user: req.session.user
   });
+};
+
+exports.postLastSubmission = async (req, res, next) => {
+  const problem = JSON.parse(req.body.problem);
+  const lastSubmittedCode = await fs.readFile(path.join(__dirname, '..', 'problems', 'Submissions', `${req.session.user._id}`, `${problem.name}.txt`), 'utf-8');
+
+  res.render('problem', {
+    pageTitle: 'Problem',
+    isLoggedIn: req.session.isLoggedIn,
+    problem: problem,
+    user: req.session.user,
+    startingCode: lastSubmittedCode,
+    mode: '',
+    testCase: '',
+    actualOutput: ''
+  });
+
 };

@@ -23,6 +23,12 @@ const userSchema = new mongoose.Schema({
     type: Boolean,
     default: false
   },
+  problems: [{
+    problemId: {
+      type: String,
+      required: true
+    }
+  }],
   verificationToken: String,
   resetToken: String
 });

@@ -25,4 +25,6 @@ router.get('/profile', isAuth, codeController.getProfile);
 
 router.get('/leaderboard', isAuth, codeController.getLeaderboard);
 
+router.post('/last-submission', codeController.postLastSubmission);
+
 module.exports = router;
