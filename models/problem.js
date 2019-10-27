@@ -16,6 +16,10 @@ const problemSchema = new mongoose.Schema({
       output: {}
     }],
     // required: true
+  },
+  difficulty: {
+    type: String,
+    required: true
   }
 });
 

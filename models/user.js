@@ -23,7 +23,7 @@ const userSchema = new mongoose.Schema({
     type: Boolean,
     default: false
   },
-  problems: [{
+  solvedProblems: [{
     problemId: {
       type: String,
       required: true

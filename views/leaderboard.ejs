@@ -41,21 +41,14 @@
                 </tr>
               </thead>
               <tbody>
-                <tr>
-                  <td>1</td>
-                  <td>Mark</td>
-                  <td>@mdo</td>
-                </tr>
-                <tr>
-                  <td>2</td>
-                  <td>Jacob</td>
-                  <td>@fat</td>
-                </tr>
-                <tr>
-                  <td>3</td>
-                  <td>Larry</td>
-                  <td>@twitter</td>
-                </tr>
+                <% users.forEach((user, index) => { %>
+                  <tr>
+                    <td><%= index + 1 %></td>
+                    <td><%= user.username %></td>
+                    <td><%= user.points %></td>
+                    </tr>
+                <% }) %>
+                
               </tbody>
           </table>
           

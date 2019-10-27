@@ -47,21 +47,14 @@
           <div class="card-body">
             
             <ul class="list-group">
-                <!-- <li class="list-group-item d-flex "> -->
+              <% solvedProblems.forEach(solvedProblem => { %>
                 <li class="list-group-item">
-                  <span class="float-left">Fibonacci Series</span>
-                  <span class="badge badge-primary badge-pill float-right">Javascript</span>
-                  <span class="badge badge-primary badge-pill float-right">10</span>
+                    <span class="float-left"><%= solvedProblem.name %></span>
+                    <span class="badge badge-primary badge-pill float-right">10</span>
+                    <span class="badge badge-primary badge-pill float-right mr-2">Javascript</span>
                 </li>
-                <li class="list-group-item d-flex justify-content-between align-items-center">
-                  Dapibus ac facilisis in
-                  <span class="badge badge-primary badge-pill">2</span>
-                </li>
-                <li class="list-group-item d-flex justify-content-between align-items-center">
-                  Morbi leo risus
-                  <span class="badge badge-primary badge-pill">1</span>
-                </li>
-              </ul>
+              <% }) %>
+            </ul>
             
           </div>
         </div>

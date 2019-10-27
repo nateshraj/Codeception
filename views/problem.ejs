@@ -124,7 +124,7 @@
               <a href="#" class="dropdown-item">Java</a>
             </li>
           </ul>
-          <% if (user.problems.find(p => p.problemId === problem._id.toString() )) { %>
+          <% if (user.solvedProblems.find(solvedProblem => solvedProblem.problemId === problem._id.toString() )) { %>
             <a class="btn btn-light rounded ml-1" href="#" data-toggle="modal" data-target="#lastSubmissionModal">
               <i class="fas fa-caret-left"></i>
               Last Submission

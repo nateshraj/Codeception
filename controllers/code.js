@@ -55,11 +55,18 @@ exports.getAddProblem = (req, res, next) => {
   });
 };
 
-exports.getProfile = (req, res, next) => {
+exports.getProfile = async (req, res, next) => {
+  const problems = [];
+  for (const solvedProblem of req.session.user.solvedProblems) {
+    const problem = await Problem.findById(solvedProblem.problemId);
+    problems.push(problem);
+  }
+  
   res.render('profile', {
     pageTitle: 'Profile',
     isLoggedIn: req.session.isLoggedIn,
-    user: req.session.user
+    user: req.session.user,
+    solvedProblems: problems
   });
 };
 
@@ -178,8 +185,8 @@ exports.postSubmitCode = async (req, res, next) => {
     }
     fs.writeFile(path.join(__dirname, '..', 'problems', 'Submissions', `${req.session.user._id.toString()}`, `${problem.name}.txt`), req.body.editorContent);
     const currentUser = await User.findById(req.session.user._id);
-    if (!currentUser.problems.find(userProblem => userProblem.problemId === problem._id.toString())) {
-      currentUser.problems.push({ problemId: problem._id });
+    if (!currentUser.solvedProblems.find(solvedProblem => solvedProblem.problemId === problem._id.toString())) {
+      currentUser.solvedProblems.push({ problemId: problem._id });
     }
     await currentUser.save();
     req.session.user = currentUser;
@@ -202,11 +209,46 @@ exports.postSubmitCode = async (req, res, next) => {
 
 };
 
-exports.getLeaderboard = (req, res, next) => {
+exports.getLeaderboard = async (req, res, next) => {
+  const users = await User.find({}).lean();
+
+  const getProblemPoints = difficulty => {
+    switch (difficulty) {
+      case "easy":
+        return 10;
+      case "medium":
+        return 20;
+      case "hard":
+        return 30;
+      default:
+        throw Error(`Invalid case - ${difficulty}`);
+    }
+  }
+
+  const getUserPoints = async user => {
+    let userPoints = 0;
+    if (user.solvedProblems) {
+      for (const solvedProblem of user.solvedProblems) {
+        const problem = await Problem.findById(solvedProblem.problemId);
+        const problemPoints = getProblemPoints(problem.difficulty);
+        userPoints += problemPoints;
+      }
+    }
+    return userPoints;
+  }
+  
+  for (const user of users) {
+    const userPoints = await getUserPoints(user);
+    user.points = userPoints;
+  }
+
+  users.sort((a, b) => b.points - a.points);
+  
   res.render('leaderboard', {
     pageTitle: 'Leaderboard',
     isLoggedIn: req.session.isLoggedIn,
-    user: req.session.user
+    user: req.session.user,
+    users: users
   });
 };
 
