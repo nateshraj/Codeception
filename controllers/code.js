@@ -61,7 +61,7 @@ exports.getProfile = async (req, res, next) => {
     const problem = await Problem.findById(solvedProblem.problemId);
     problems.push(problem);
   }
-  
+
   res.render('profile', {
     pageTitle: 'Profile',
     isLoggedIn: req.session.isLoggedIn,
@@ -130,7 +130,21 @@ exports.postSubmitCode = async (req, res, next) => {
   const expectedOutputs = [];
 
   for (let testCase of problem.testCases) {
-    functionCalls += `\nconsole.log(${functioName}(${testCase.input}));`;
+    let arguments = '';
+    for (let [index, input] of testCase.input.entries()) {
+      if (typeof input === 'string') {
+        arguments += `'${input}'`;
+      } else {
+        arguments += `${input}`;
+      }
+      if (index !== testCase.input.length - 1) {
+        arguments += ',';
+      }
+    }
+
+    functionCalls += `\nconsole.log(${functioName}(${arguments}));`;
+
+
     expectedOutputs.push(testCase.output);
   }
 
@@ -236,14 +250,14 @@ exports.getLeaderboard = async (req, res, next) => {
     }
     return userPoints;
   }
-  
+
   for (const user of users) {
     const userPoints = await getUserPoints(user);
     user.points = userPoints;
   }
 
   users.sort((a, b) => b.points - a.points);
-  
+
   res.render('leaderboard', {
     pageTitle: 'Leaderboard',
     isLoggedIn: req.session.isLoggedIn,

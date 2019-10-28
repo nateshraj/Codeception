@@ -16,7 +16,7 @@ const problemSchema = new mongoose.Schema({
   },
   testCases: {
     type: [{
-      input: {},
+      input: [],
       output: {}
     }],
     // required: true
