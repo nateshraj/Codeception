@@ -89,13 +89,15 @@
     <div class="row mr-auto pt-3">
 
 
-      <div class="col-sm-6 pl-4 pt-5">
-        <span id="problemName" class="text-white"><%= problem.name %></span>
-        <div class="card rounded-0 border-dark">
-          <div class="card-body">
-            <span><%= problem.description %></</span>
-          </div>
+      <div class="col-sm-6 pl-4 pt-5 text-white">
+        <div class="ml-3">
+          <span id="problemName" class="text-white"><%= problem.name %></span>  
+          <br><br>
+          <span><%= problem.description %></</span>
+          <br><br>
+          <span><%- problem.details %></</span>
         </div>
+        
       </div>
 
       <div class="col-sm-6 pr-2 pt-5">
@@ -252,7 +254,7 @@
           <hr>
           <% results.forEach((result, index) => { %>
             <button type="button" class="btn btn-lg <%= result ? 'btn-success' : 'btn-danger' %>" disabled>
-              Test Case <%= index %>
+              Test Case <%= index + 1 %>
               <i class="<%= result ? 'fas fa-check-circle' : 'fas fa-times-circle' %>"></i>
             </button>
           <% }) %>
