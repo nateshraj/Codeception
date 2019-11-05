@@ -134,6 +134,8 @@ exports.postSubmitCode = async (req, res, next) => {
     for (let [index, input] of testCase.input.entries()) {
       if (typeof input === 'string') {
         arguments += `'${input}'`;
+      } else if (Array.isArray(input)){
+        arguments += `[${input}]`;
       } else {
         arguments += `${input}`;
       }
