@@ -82,9 +82,22 @@ exports.postAddProblem = async (req, res, next) => {
 
 exports.postRunCode = async (req, res, next) => {
   const problem = await Problem.findById(req.body.problemId);
-  const testCase = problem.testCases[0];
   const functioName = req.body.editorContent.split(' ')[1];
-  const code = req.body.editorContent + `\nconsole.log(${functioName}(${testCase.input}));`;
+  const testCase = problem.testCases[0];
+  let arguments = '';
+  for (let [index, input] of testCase.input.entries()) {
+    if (typeof input === 'string') {
+      arguments += `'${input}'`;
+    } else if (Array.isArray(input)){
+      arguments += `[${input}]`;
+    } else {
+      arguments += `${input}`;
+    }
+    if (index !== testCase.input.length - 1) {
+      arguments += ',';
+    }
+  }
+  const code = req.body.editorContent + `\nconsole.log(${functioName}(${arguments}));`;
   console.log('----------------');
   console.log(code);
   console.log('----------------');
