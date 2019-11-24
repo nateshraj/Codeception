@@ -1,4 +1,4 @@
-function anagramChecker (string1, string2) {
+function isAnagram (string1, string2) {
 	//Write your code here
 
 }
