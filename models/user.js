@@ -27,6 +27,10 @@ const userSchema = new mongoose.Schema({
     problemId: {
       type: String,
       required: true
+    },
+    code: {
+      type: String,
+      required: true
     }
   }],
   verificationToken: String,

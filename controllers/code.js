@@ -18,7 +18,7 @@ exports.getIndex = (req, res, next) => {
 exports.getProblem = async (req, res, next) => {
   const problem = await Problem.findById(req.params.problemId);
   try {
-    const startingCode = await fs.readFile(path.join(__dirname, '..', 'problems', 'Starting Code', `${problem.name}.txt`), 'utf-8');
+    const startingCode = await fs.readFile(path.join(__dirname, '..', 'problems', `${problem.name}.txt`), 'utf-8');
 
     res.render('problem', {
       pageTitle: 'Problem',
@@ -38,7 +38,6 @@ exports.getProblem = async (req, res, next) => {
 
 exports.getProblemList = async (req, res, next) => {
   const problems = await Problem.find({});
-  console.log(problems);
   res.render('problem-list', {
     pageTitle: 'Problems',
     isLoggedIn: req.session.isLoggedIn,
@@ -88,7 +87,7 @@ exports.postRunCode = async (req, res, next) => {
   for (let [index, input] of testCase.input.entries()) {
     if (typeof input === 'string') {
       arguments += `'${input}'`;
-    } else if (Array.isArray(input)){
+    } else if (Array.isArray(input)) {
       arguments += `[${input}]`;
     } else {
       arguments += `${input}`;
@@ -147,7 +146,7 @@ exports.postSubmitCode = async (req, res, next) => {
     for (let [index, input] of testCase.input.entries()) {
       if (typeof input === 'string') {
         arguments += `'${input}'`;
-      } else if (Array.isArray(input)){
+      } else if (Array.isArray(input)) {
         arguments += `[${input}]`;
       } else {
         arguments += `${input}`;
@@ -203,19 +202,16 @@ exports.postSubmitCode = async (req, res, next) => {
 
   const toSubmit = results.every(result => result);
   if (toSubmit) {
-    try {
-      await fs.stat(path.join(__dirname, '..', 'problems', 'Submissions', `${req.session.user._id.toString()}`));
-    } catch (e) {
-      if (e.code === 'ENOENT') {
-        await fs.mkdir(path.join(__dirname, '..', 'problems', 'Submissions', `${req.session.user._id.toString()}`));
-      } else {
-        throw Error(e);
-      }
-    }
-    fs.writeFile(path.join(__dirname, '..', 'problems', 'Submissions', `${req.session.user._id.toString()}`, `${problem.name}.txt`), req.body.editorContent);
     const currentUser = await User.findById(req.session.user._id);
-    if (!currentUser.solvedProblems.find(solvedProblem => solvedProblem.problemId === problem._id.toString())) {
-      currentUser.solvedProblems.push({ problemId: problem._id });
+    const solvedAlready = currentUser.solvedProblems.find(solvedProblem => solvedProblem.problemId === problem._id.toString());
+    if (!solvedAlready) {
+      currentUser.solvedProblems.push({ problemId: problem._id, code: req.body.editorContent });
+    } else {
+      currentUser.solvedProblems.forEach(solvedProblem => {
+        if (solvedProblem.problemId === problem._id.toString()) {
+          solvedProblem.code = req.body.editorContent;
+        }
+      });
     }
     await currentUser.save();
     req.session.user = currentUser;
@@ -283,8 +279,8 @@ exports.getLeaderboard = async (req, res, next) => {
 
 exports.postLastSubmission = async (req, res, next) => {
   const problem = JSON.parse(req.body.problem);
-  const lastSubmittedCode = await fs.readFile(path.join(__dirname, '..', 'problems', 'Submissions', `${req.session.user._id}`, `${problem.name}.txt`), 'utf-8');
-
+  const lastSubmittedCode = req.session.user.solvedProblems.find(solvedProblem => solvedProblem.problemId === problem._id).code;
+  
   res.render('problem', {
     pageTitle: 'Problem',
     isLoggedIn: req.session.isLoggedIn,
