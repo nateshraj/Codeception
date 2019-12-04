@@ -18,8 +18,10 @@ exports.getIndex = (req, res, next) => {
 exports.getProblem = async (req, res, next) => {
   const problem = await Problem.findById(req.params.problemId);
   try {
-    const startingCode = await fs.readFile(path.join(__dirname, '..', 'problems', `${problem.name}.txt`), 'utf-8');
-
+    const JsStartingCode = await fs.readFile(path.join(__dirname, '..', 'problems', 'JavaScript', `${problem.name}.txt`), 'utf-8');
+    const PyStartingCode = await fs.readFile(path.join(__dirname, '..', 'problems', 'Python', `${problem.name}.txt`), 'utf-8');
+    const startingCode = { JavaScript: JsStartingCode, Python: PyStartingCode };
+    console.log(startingCode);
     res.render('problem', {
       pageTitle: 'Problem',
       isLoggedIn: req.session.isLoggedIn,
@@ -80,6 +82,7 @@ exports.postAddProblem = async (req, res, next) => {
 };
 
 exports.postRunCode = async (req, res, next) => {
+  console.log(req.body.language);
   const problem = await Problem.findById(req.body.problemId);
   const functioName = req.body.editorContent.split(' ')[1];
   const testCase = problem.testCases[0];
@@ -134,6 +137,7 @@ exports.postRunCode = async (req, res, next) => {
 
 
 exports.postSubmitCode = async (req, res, next) => {
+  console.log(req.body.language);
   const problem = await Problem.findById(req.body.problemId);
   const functioName = req.body.editorContent.split(' ')[1];
   let code = req.body.editorContent;
@@ -280,7 +284,7 @@ exports.getLeaderboard = async (req, res, next) => {
 exports.postLastSubmission = async (req, res, next) => {
   const problem = JSON.parse(req.body.problem);
   const lastSubmittedCode = req.session.user.solvedProblems.find(solvedProblem => solvedProblem.problemId === problem._id).code;
-  
+
   res.render('problem', {
     pageTitle: 'Problem',
     isLoggedIn: req.session.isLoggedIn,

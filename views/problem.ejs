@@ -112,18 +112,13 @@
           </div> -->
 
         <div class="btn-group">
-          <a href="#" class="ml-2 btn btn btn-light dropdown-toggle rounded" data-toggle="dropdown" id="languageButton">
-            <span>Javascript</span>
-          </a>
+          <a href="#" class="ml-2 btn btn btn-light dropdown-toggle rounded" data-toggle="dropdown" id="languageButton"></a>
           <ul class="dropdown-menu" id="languageDropDown">
             <li>
-              <a href="#" class="dropdown-item">Javascript</a>
+              <a href="#" class="dropdown-item">JavaScript</a>
             </li>
             <li>
               <a href="#" class="dropdown-item">Python</a>
-            </li>
-            <li>
-              <a href="#" class="dropdown-item">Java</a>
             </li>
           </ul>
           <% if (user.solvedProblems.find(solvedProblem => solvedProblem.problemId === problem._id.toString() )) { %>
@@ -141,14 +136,14 @@
               <i class="fas fa-history"></i>
               Revert
           </a>
-          <form action="/run-code" method="POST" class="d-inline">
+          <form action="/run-code" method="POST" class="d-inline" id="mobileRunForm">
             <textarea style="display: none;" name="editorContent" id="mobileEditorContent"></textarea>
             <button type="submit" class="btn btn-light">
               <i class="fas fa-play-circle"></i>
               Run
             </button>
           </form>
-          <form action="/submit-code" method="POST" class="d-inline">
+          <form action="/submit-code" method="POST" class="d-inline" id="mobileSubmitForm">
             <textarea style="display: none;" name="editorContent" id="mobileEditorContent"></textarea>
             <button type="submit" class="btn btn-success">
               <i class="fas fa-code"></i>
@@ -158,7 +153,7 @@
           <br>
         </div>
         <div class="d-none d-md-inline">
-          <form action="/submit-code" method="POST" class="d-inline">
+          <form action="/submit-code" method="POST" class="d-inline" id="submitForm">
             <input type="hidden" name="problemId" value="<%= problem._id %>">
             <textarea style="display: none;" name="editorContent" id="desktopEditorContent"></textarea>
             <button type="submit" class="btn btn-success float-right">
@@ -166,7 +161,7 @@
               Submit
             </button>
           </form>
-          <form action="/run-code" method="POST" class="d-inline">
+          <form action="/run-code" method="POST" class="d-inline" id="runForm">
             <input type="hidden" name="problemId" value="<%= problem._id %>">
             <textarea style="display: none;" name="editorContent" id="desktopEditorContent"></textarea>
             <button type="submit" class="btn btn-light float-right mr-1">
@@ -202,7 +197,8 @@
         </a> -->
 
         
-        <div id="editor" class="w-auto mt-3"><%= startingCode %></div>
+        <div id="editor" class="w-auto mt-3"><%= startingCode.JavaScript %></div>
+        <!-- <div id="editor" class="w-auto mt-3"><%= startingCode.JavaScript %></div> -->
 
 
 
@@ -340,11 +336,29 @@
   <script src="http://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
     crossorigin="anonymous"></script>
 
-  <script>
+  <!-- <script>
+    $(document).ready(function() {  
+      $("#languageDropDown .dropdown-item")[0].click();
+    });
     $("#languageDropDown li a").click(function () {
       var selText = $(this).text();
+      $('#runForm input[name="language"],#submitForm input[name="language"],#mobileRunForm input[name="language"],#mobileSubmitForm input[name="language"]').remove();
+      var languageInput = `<input type="hidden" name="language" value="${selText}">`;
+      $("#runForm,#submitForm,#mobileRunForm,#mobileSubmitForm").append(jQuery(languageInput));
       $(this).parents('.btn-group').find('.dropdown-toggle').html(selText + ' <span class="caret"></span>');
     });
+  </script> -->
+
+
+  <script>
+    $(document).ready(function() {  
+      $("#languageDropDown .dropdown-item")[0].click();
+    });
+    // var selText = $("#languageDropDown li a").text();
+
+    
+    
+    
   </script>
 
   <script>
@@ -402,7 +416,25 @@
     });
   </script>
 
+  <script>
+    
+    $("#languageDropDown li a").click(function () {
+      var selText = $(this).text();
+      $('#runForm input[name="language"],#submitForm input[name="language"],#mobileRunForm input[name="language"],#mobileSubmitForm input[name="language"]').remove();
+      var languageInput = `<input type="hidden" name="language" value="${selText}">`;
+      $("#runForm,#submitForm,#mobileRunForm,#mobileSubmitForm").append(jQuery(languageInput));
+      $(this).parents('.btn-group').find('.dropdown-toggle').html(selText + ' <span class="caret"></span>');
+    });
+  </script>
 
+  <script>
+    // $('.dropdown-item').click(function() {
+    //     console.log( $(this).text() );
+    // });
+    // $('.dropdown-item').on(function() {
+    //     console.log( $(this).text() );
+    // });
+  </script>
   
 
   <script src="http://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
