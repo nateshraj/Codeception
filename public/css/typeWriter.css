@@ -2,37 +2,35 @@
 /* TYPEWRITER */
 /**************/
 
-#smallTypeWriter, #mediumTypeWriter {
+#typeWriter {
   width: 100%;
   height: 100%;
   color: #23CE6B;
   /* color: black; */
   font-family: 'Open Sans', courier;
   padding-left: 30px;
-  padding-top: 30px;
-  position: absolute;
+  /* padding-top: 30px; */
+  /* position: absolute; */
   top: 0;
   left: 0;
   z-index: 10;
 }
 
-#smallTypeWriter span, #mediumTypeWriter span {
+#typeWriter span {
   display: block;
   font-size: 20px;
   letter-spacing: 2px;
 }
 
-#smallTypeWriter :last-child::after,
-#mediumTypeWriter :last-child::after {
+#typeWriter :last-child::after {
   content: '_';
   display: inline-block;
   animation: blink 1s step-end infinite;
 }
 
-#smallTypeWriter #init::after, #mediumTypeWriter #init::after { display: none; }
+#typeWriter #init::after { display: none; }
 
-#smallTypeWriter span.typewriter-item::before,
-#mediumTypeWriter span.typewriter-item::before {
+#typeWriter span.typewriter-item::before {
   content: '>';
   display: inline-block;
   margin-right: 10px;

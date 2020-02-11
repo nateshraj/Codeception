@@ -5,10 +5,10 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
-  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr"
-    crossorigin="anonymous">
-  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"
-    crossorigin="anonymous">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css"
+    integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+    integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fullPage.js/3.0.4/fullpage.css">
   <link rel="stylesheet" href="/css/typeWriter.css">
   <link rel="stylesheet" href="/css/style.css">
@@ -16,8 +16,8 @@
     <%= pageTitle %>
   </title>
   <script type="text/javascript" src="/js/typeWriter.js"></script>
-  <script src="http://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
-    crossorigin="anonymous"></script>
+  <script src="http://code.jquery.com/jquery-3.3.1.min.js"
+    integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
 </head>
 
 <body data-spy="scroll" data-target="#mainNavbar" id="homeSection">
@@ -28,34 +28,37 @@
   <div id="fullpage">
     <!-- remove fp-auto-height-responsive -->
     <section id="homeSection" class="section fp-auto-height-responsive">
-      <div class="container">
-        <div class="row" id="homeRow">
+      <div class="container h-100">
+        <div class="row h-100 align-items-center" id="homeRow">
           <!--Typewriter starts-->
-          <div class="col-sm d-md-none mb-5">
-            <section id="smallTypeWriter"></section>
-          </div>
-          <div class="col-md-8 d-none d-md-block mt-5 mb-5">
-            <section id="mediumTypeWriter"></section>
+          <div class="col-sm col-md-8 my-3">
+            <section id="typeWriter"></section>
           </div>
           <!--Typewriter ends-->
           <!--Card with form starts-->
-          <div class="col-sm col-md-4 mt-5">
+          <div class="col-sm col-md-4">
             <ul class="nav nav-pills nav-justified" role="tablist">
               <li class="nav-item">
-                <a href="#signupCard" class="nav-link btn btn-dark rounded-0 <%= activeCard.includes('signup') ? 'active' : ''%>" data-toggle="tab">Signup</a>
+                <a href="#signupCard"
+                  class="nav-link btn btn-dark rounded-0 <%= activeCard.includes('signup') ? 'active' : ''%>"
+                  data-toggle="tab">Signup</a>
               </li>
               <li class="nav-item">
-                <a href="#loginCard" class="nav-link btn btn btn-dark rounded-0 <%= activeCard.includes('login') ? 'active' : ''%>" data-toggle="tab">Login</a>
+                <a href="#loginCard"
+                  class="nav-link btn btn btn-dark rounded-0 <%= activeCard.includes('login') ? 'active' : ''%>"
+                  data-toggle="tab">Login</a>
               </li>
             </ul>
             <div class="card text-center text-dark rounded-0" id="homeCard">
               <div class="tab-content">
                 <div class="card-body tab-pane <%= activeCard.includes('signup') ? 'active' : ''%>" id="signupCard">
-                  <h3>Sign up today</h3>
-                  <form action="/signup" method="POST" novalidate> <!--Remove novalidate later-->
+                  <h3>Sign up now!</h3>
+                  <form action="/signup" method="POST" novalidate>
+                    <!--Remove novalidate later-->
                     <div class="form-group mt-4">
                       <input type="text" class="form-control" placeholder="Username" name="username" required>
-                      <!-- <span class="font-weight-bold text-danger">Failed</span> --> <!--For validation errors-->
+                      <!-- <span class="font-weight-bold text-danger">Failed</span> -->
+                      <!--For validation errors-->
                     </div>
                     <div class="form-group">
                       <input type="email" class="form-control" placeholder="Email" name="email" required>
@@ -71,10 +74,11 @@
                   </form>
                 </div>
                 <div class="card-body tab-pane <%= activeCard.includes('login') ? 'active' : ''%>" id="loginCard">
-                  <h3>Login now</h3>
+                  <h3>Login now!</h3>
                   <form action="/login" method="POST">
                     <div class="form-group mt-4">
-                      <input type="text" class="form-control" placeholder="Username or Email" name="usernameOrEmail" required>
+                      <input type="text" class="form-control" placeholder="Username or Email" name="usernameOrEmail"
+                        required>
                     </div>
                     <div class="form-group">
                       <input type="password" class="form-control" placeholder="Password" name="password" required>
@@ -97,11 +101,11 @@
 
     <!--About Section starts-->
     <section id="aboutSection" class="section fp-auto-height-responsive">
-      <div class="row mr-0" id="aboutRow">
+      <div class="row h-100 mr-0" id="aboutRow">
         <div class="col-sm-6 d-none d-md-block px-0">
           <img src="/images/about.jpg" alt="" class="img-fluid" id="aboutImage">
         </div>
-        <div class="col-sm-6 text-white mt-3">
+        <div class="col-sm-6 text-white align-self-center">
           <div class="container">
             <h2>About</h2>
             <p class="lead text-justify">Lorem ipsum dolor sit, amet consectetur adipisicing elit. Accusantium vitae
@@ -124,8 +128,8 @@
 
     <!--Contact Section starts-->
     <section id="contactSection" class="section fp-auto-height-responsive">
-      <div class="row mr-0 mt-3">
-        <div class="col-sm-6 col-md-6 text-white mt-3">
+      <div class="row h-75 mr-0 align-items-center">
+        <div class="col-sm-6 col-md-6 text-white">
           <div class="container">
             <h2>Contact</h2>
             <p class="lead">Lorem ipsum dolor sit, amet consectetur adipisicing elit. Accusantium vitae unde quo cum
@@ -141,7 +145,7 @@
             </p>
           </div>
         </div>
-        <div class="col-sm-6 col-md-4 offset-md-1 mt-4">
+        <div class="col-sm-6 col-md-4 offset-md-1">
           <div class="card text-center text-dark" id="contactCard">
             <div class="card-body">
               <h3>Feedback</h3>
@@ -162,16 +166,13 @@
         </div>
       </div>
       <!-- Copyright footer -->
-      <footer>
-        <br><br>
-        <div class="cotainer">
-          <div class="row mt-5 mr-0">
-            <div class="col text-center text-white">
-              <p>Codeception &copy; 2019</p>
-            </div>
-          </div>
+      <div class="row h-25 mr-0 align-items-end">
+        <div class="col text-center text-white">
+          <footer>
+            <p>Codeception &copy; 2020</p>
+          </footer>
         </div>
-      </footer>
+      </div>
     </section>
     <!--Contact Section ends-->
   </div>
@@ -201,9 +202,11 @@
 
   <script type="text/javascript" src="/js/utilities.js"></script>
   <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/fullPage.js/3.0.4/fullpage.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+    integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
     crossorigin="anonymous"></script>
-  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+    integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
     crossorigin="anonymous"></script>
 </body>
 

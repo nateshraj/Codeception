@@ -1,8 +1,6 @@
 $(function () {
-  var smallTypeWriter = new SmallTypeWriter('#smallTypeWriter');
-  smallTypeWriter.start()
-  var mediumTypeWriter = new MediumTypeWriter('#mediumTypeWriter');
-  mediumTypeWriter.start();
+  var typeWriter = new TypeWriter('#typeWriter');
+  typeWriter.start();
 });
 
 $('#resetPasswordModal').on('hidden.bs.modal', function () {
