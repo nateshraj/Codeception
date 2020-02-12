@@ -9,7 +9,7 @@
     integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
     integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fullPage.js/3.0.4/fullpage.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fullPage.js/3.0.8/fullpage.css">  
   <link rel="stylesheet" href="/css/typeWriter.css">
   <link rel="stylesheet" href="/css/style.css">
   <title>
@@ -59,6 +59,9 @@
                       <input type="text" class="form-control" placeholder="Username" name="username" required>
                       <!-- <span class="font-weight-bold text-danger">Failed</span> -->
                       <!--For validation errors-->
+                      <!-- <div class="invalid-feedback">
+                        Invalid username.
+                      </div> -->
                     </div>
                     <div class="form-group">
                       <input type="email" class="form-control" placeholder="Email" name="email" required>
@@ -145,22 +148,24 @@
             </p>
           </div>
         </div>
-        <div class="col-sm-6 col-md-4 offset-md-1">
-          <div class="card text-center text-dark" id="contactCard">
-            <div class="card-body">
-              <h3>Feedback</h3>
-              <form>
-                <div class="form-group mt-4">
-                  <input type="text" class="form-control" placeholder="Name">
-                </div>
-                <div class="form-group">
-                  <input type="text" class="form-control" placeholder="Email">
-                </div>
-                <div class="form-group">
-                  <textarea class="form-control" rows="4" placeholder="Message"></textarea>
-                </div>
-                <input type="submit" value="Submit" class="btn btn-dark">
-              </form>
+        <div class="col-sm-5 col-md-4 offset-md-1">
+          <div class="container pr-0">
+            <div class="card text-center text-dark" id="contactCard">
+              <div class="card-body">
+                <h3>Feedback</h3>
+                <form>
+                  <div class="form-group mt-4">
+                    <input type="text" class="form-control" placeholder="Name">
+                  </div>
+                  <div class="form-group">
+                    <input type="text" class="form-control" placeholder="Email">
+                  </div>
+                  <div class="form-group">
+                    <textarea class="form-control" rows="4" placeholder="Message"></textarea>
+                  </div>
+                  <input type="submit" value="Submit" class="btn btn-dark">
+                </form>
+              </div>
             </div>
           </div>
         </div>
@@ -201,7 +206,7 @@
   <!--Forgot Password modal ends-->
 
   <script type="text/javascript" src="/js/utilities.js"></script>
-  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/fullPage.js/3.0.4/fullpage.js"></script>
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/fullPage.js/3.0.8/fullpage.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
     integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
     crossorigin="anonymous"></script>
