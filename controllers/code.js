@@ -11,7 +11,9 @@ exports.getIndex = (req, res, next) => {
   res.render('index', {
     pageTitle: 'Codeception',
     activeCard: 'signup',
-    isLoggedIn: req.session.isLoggedIn
+    isLoggedIn: req.session.isLoggedIn,
+    error: '',
+    form: {}
   });
 };
 

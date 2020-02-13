@@ -6,15 +6,21 @@ const crypto = require('crypto');
 const mongoose = require('mongoose')
 
 exports.postSignup = async (req, res, next) => {
+  const form = {
+    username: req.body.username,
+    email: req.body.email,
+    password: req.body.password
+  };
   try {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       console.log(errors.array());
-      return res.status(422).render('index', {
+      return res.status(400).render('index', {
         pageTitle: 'Codeception',
         activeCard: 'signup',
-        errorMessage: errors.array()[0].msg,
-        isLoggedIn: req.session.isLoggedIn
+        error: errors.array()[0],
+        isLoggedIn: req.session.isLoggedIn,
+        form: form
       });
     }
     const hashedPassword = await bcrypt.hash(req.body.password, 12);
@@ -28,18 +34,30 @@ exports.postSignup = async (req, res, next) => {
     await user.save();
     console.log('User has been created');
 
-    sendMail(req.body.email, req.body.username, token, 'verify');
+    sendMail(user, 'Verify');
 
     res.render('index', {
       pageTitle: 'Signup Testing',
       activeCard: 'login',
-      isLoggedIn: req.session.isLoggedIn
+      isLoggedIn: req.session.isLoggedIn,
+      error: '',
+      form: {}
     });
   } catch (e) {
     if (e.name === 'MongoError' && e.code === 11000) {
       const fields = ['Username', 'Email'];
       const duplicateField = fields.find(field => e.errmsg.includes(field.toLowerCase()));
       console.log(`${duplicateField} already exists`);
+      return res.status(400).render('index', {
+        pageTitle: 'Codeception',
+        activeCard: 'signup',
+        error: {
+          msg: `${duplicateField} already exists`,
+          param: `${duplicateField.toLowerCase()}`
+        },
+        isLoggedIn: req.session.isLoggedIn,
+        form: form
+      });
       // Re-render the index page with signup card with the above error message
       // throw Error('test');
     } else {
@@ -50,14 +68,18 @@ exports.postSignup = async (req, res, next) => {
 
 exports.postLogin = async (req, res, next) => {
   try {
+    const form = {
+      usernameOrEmail: req.body.usernameOrEmail
+    };
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       console.log(errors.array());
-      return res.status(422).render('index', {
+      return res.status(400).render('index', {
         pageTitle: 'Codeception',
         activeCard: 'login',
-        errorMessage: errors.array()[0].msg,
-        isLoggedIn: req.session.isLoggedIn
+        error: errors.array()[0],
+        isLoggedIn: req.session.isLoggedIn,
+        form: form
       });
     }
 
@@ -67,8 +89,16 @@ exports.postLogin = async (req, res, next) => {
       $or: [{ username: usernameOrEmail }, { email: usernameOrEmail }]
     });
     if (!user) {
-      //Add error flash message or do something else
-      throw Error('User not found');
+      return res.status(400).render('index', {
+        pageTitle: 'Login',
+        activeCard: 'login',
+        isLoggedIn: req.session.isLoggedIn,
+        error: {
+          msg: 'Invalid user',
+          param: 'usernameOrEmail'
+        },
+        form: form
+      });
     }
     const match = await bcrypt.compare(req.body.password, user.password);
     if (match) {
@@ -79,7 +109,16 @@ exports.postLogin = async (req, res, next) => {
       return res.redirect('/problems');
     }
     else {
-      throw Error('Credentials don\'t match');
+      return res.status(400).render('index', {
+        pageTitle: 'Login',
+        activeCard: 'login',
+        isLoggedIn: req.session.isLoggedIn,
+        error: {
+          msg: 'Invalid credentials',
+          param: 'password'
+        },
+        form: form
+      });
     }
 
 
@@ -101,7 +140,16 @@ exports.getVerify = async (req, res, next) => {
     });
     if (!user) {
       //Add flash message or do something else
-      throw Error('User not found');
+      return res.status(400).render('index', {
+        pageTitle: 'Codeception',
+        activeCard: 'login',
+        error: {
+          msg: 'Invalid token. Please verify your email again.',
+          param: 'verificationToken'
+        },
+        form: {},
+        isLoggedIn: req.session.isLoggedIn
+      });
     }
     user.isVerified = true;
     user.verificationToken = undefined;
@@ -115,7 +163,9 @@ exports.getVerify = async (req, res, next) => {
       res.render('index', {
         pageTitle: 'Signup Testing',
         activeCard: 'login',
-        isLoggedIn: req.session.isLoggedIn
+        isLoggedIn: req.session.isLoggedIn,
+        error: '',
+        form: {}
       });
     }
   }
@@ -126,15 +176,20 @@ exports.getVerify = async (req, res, next) => {
 
 exports.postReset = async (req, res, next) => {
   try {
+    const form = {
+      resetUsernameOrEmail: req.body.resetUsernameOrEmail
+    }
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       console.log(errors.array());
       // Change to show the error message in the modal itself
-      // return res.status(422).render('index', {
-      //   pageTitle: 'Codeception',
-      //   activeCard: 'signup',
-      //   errorMessage: errors.array()[0].msg
-      // });
+      return res.status(400).render('index', {
+        pageTitle: 'Codeception',
+        activeCard: 'login',
+        error: errors.array()[0],
+        isLoggedIn: req.session.isLoggedIn,
+        form: form
+      });
     }
     const usernameOrEmail = req.body.resetUsernameOrEmail
     const resetToken = crypto.randomBytes(32).toString('hex');
@@ -142,19 +197,29 @@ exports.postReset = async (req, res, next) => {
       $or: [{ username: usernameOrEmail }, { email: usernameOrEmail }]
     });
     if (!user) {
-      //Add error flash message or do something else
-      throw Error('User not found');
+      return res.status(400).render('index', {
+        pageTitle: 'Codeception',
+        activeCard: 'login',
+        error: {
+          msg: 'Invalid user or email',
+          param: 'resetUsernameOrEmail'
+        },
+        form: form,
+        isLoggedIn: req.session.isLoggedIn
+      });
     }
     user.resetToken = resetToken;
     await user.save();
     console.log('A mail has been sent to reset your password');
 
-    sendMail(user.email, user.username, resetToken, 'reset');
+    sendMail(user, 'Reset');
 
     res.render('index', {
       pageTitle: 'Signup Testing',
       activeCard: 'login',
-      isLoggedIn: req.session.isLoggedIn
+      isLoggedIn: req.session.isLoggedIn,
+      error: '',
+      form: {}
     });
   } catch (e) {
     throw Error(`Unable to reset password` + e);
@@ -168,9 +233,16 @@ exports.getResetPassword = async (req, res, next) => {
       resetToken: resetToken
     });
     if (!user) {
-      //Add flash message or do something else
-      throw Error('User not found');
-      // Show an alert to say invalid request and redirect to homepage
+      return res.status(400).render('index', {
+        pageTitle: 'Codeception',
+        activeCard: 'login',
+        error: {
+          msg: 'Invalid token. Please reset your password again.',
+          param: 'resetToken'
+        },
+        form: {},
+        isLoggedIn: req.session.isLoggedIn
+      });
     }
 
 
@@ -181,7 +253,8 @@ exports.getResetPassword = async (req, res, next) => {
     res.render('reset-password', {
       pageTitle: 'Reset Password',
       userId: user._id.toString(),
-      resetToken: resetToken
+      resetToken: resetToken,
+      error: ''
     });
   }
   catch (e) {
@@ -196,11 +269,12 @@ exports.postResetPassword = async (req, res, next) => {
     if (!errors.isEmpty()) {
       console.log(errors.array());
       // Change to show the error message in the reset password page
-      // return res.status(422).render('index', {
-      //   pageTitle: 'Codeception',
-      //   activeCard: 'signup',
-      //   errorMessage: errors.array()[0].msg
-      // });
+      return res.status(400).render('reset-password', {
+        pageTitle: 'Reset Password',
+        userId: req.body.userId,
+        resetToken: req.body.resetToken,
+        error: errors.array()[0]
+      });
     }
     const user = await User.findOne({
       resetToken: req.body.resetToken,
@@ -208,18 +282,31 @@ exports.postResetPassword = async (req, res, next) => {
     });
     if (!user) {
       //Add flash message or do something else
-      throw Error('User not found');
+      return res.status(400).render('index', {
+        pageTitle: 'Codeception',
+        activeCard: 'login',
+        error: {
+          msg: 'Invalid token. Please reset your password again.',
+          param: 'resetToken'
+        },
+        form: {},
+        isLoggedIn: req.session.isLoggedIn
+      });
     }
     const hashedPassword = await bcrypt.hash(req.body.password, 12);
     user.password = hashedPassword;
     user.resetToken = undefined;
+    user.isVerified = true;
+    user.verificationToken = undefined;
     await user.save();
 
     //To change page titles everywhere
     res.render('index', {
       pageTitle: 'Signup Testing',
       activeCard: 'login',
-      isLoggedIn: req.session.isLoggedIn
+      isLoggedIn: req.session.isLoggedIn,
+      error: '',
+      form: {}
     });
   }
   catch (e) {
@@ -238,29 +325,30 @@ exports.postLogout = async (req, res, next) => {
 }
 
 exports.postResendVerification = async (req, res, next) => {
-  sendMail(req.session.user.email, req.session.user.username, req.session.user.verificationToken, 'verify');
+  sendMail(req.session.user, 'Verify');
   res.redirect('/problems');
 }
 
-async function sendMail(mailTo, username, token, type) {
-  //To change the message and provide an activation link to confirm user
-  //Change localhost to hosted place before deploying
+async function sendMail(user, type) {
+  const { email, username, verificationToken, resetToken } = user;
+
+  const templateData = type === 'Verify' ? {
+    subject: 'Codeception - Welcome!',
+    text: `Hi ${username}, thanks for signing up! Please click the button below to verify your email.`,
+    buttonText: `${type} email`,
+    link: `http://codeception.herokuapp.com/verify/${verificationToken}`
+  } : {
+      subject: 'Codeception - Reset Password',
+      text: `Hi ${username}, please click the button below to reset your password.`,
+      buttonText: `${type} password`,
+      link: `http://codeception.herokuapp.com/reset/${resetToken}`
+    };
+
   const message = {
-    to: mailTo,
+    to: email,
     from: process.env.SENDGRID_FROM_EMAIL,
-    subject: type === 'reset' ? 'Reset your Codeception password' : 'Welcome to Codeception!',
-    text: type === 'reset' ? `Hi ${username}, Follow these steps to reset` : `Welcome ${username}, thanks for signing up`,
-    html: type === 'reset' ?
-      `
-        <p><strong>Hello ${username},</strong>
-        <br>Please click this link to <a href="http://localhost:3000/reset/${token}"> reset your password.</a>
-        </p>
-    ` :
-      `
-        <p><strong>Welcome ${username}, thanks for signing up!</strong>
-        <br>Please click this link to <a href="http://localhost:3000/verify/${token}"> verify your account.</a>
-        </p>
-        `
+    templateId: 'd-2c292e6f2ba94f409e9e51b7d03cbd19',
+    dynamic_template_data: templateData
   };
 
   sendgrid.setApiKey(process.env.SENDGRID_API_KEY);

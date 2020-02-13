@@ -6,18 +6,18 @@ const { body } = require('express-validator');
 router.post(
   '/signup',
   [
-    body('username', 'Username should contain text and numbers and atleast 3 characters')
+    body('username', 'Username should contain text or numbers and atleast 3 characters')
       .isLength({ min: 3 })
       .isAlphanumeric(),
     body('email', 'Please enter a valid Email')
       .isEmail(),
     body('password')
-      .isLength({ min: 8 })
-      .withMessage('Password should contain atleast 8 characters'),
+      .isLength({ min: 6 })
+      .withMessage('Password should contain atleast 6 characters'),
     // To add regex to validate special characters later
     body('confirmPassword').custom((value, { req }) => {
       if (value !== req.body.password) {
-        throw Error('Password and confirm password doesn\'t match');
+        throw Error('Password and confirm password does not match');
       }
       return true;
     })
@@ -28,11 +28,8 @@ router.post(
 router.post(
   '/login',
   [
-    body('usernameOrEmail', 'Please enter a valid username or email')
-      .isLength({ min: 3 }),
-    body('password')
-      .exists()
-      .withMessage('Please enter the password')
+    body('usernameOrEmail', 'Please enter a valid username or email').isLength({ min: 3 }),
+    body('password', 'Please enter the password').not().isEmpty()
   ],
   authController.postLogin
 );
@@ -41,8 +38,7 @@ router.get('/verify/:verificationToken', authController.getVerify);
 
 router.post(
   '/reset',
-  body('resetUsernameOrEmail', 'Please enter a valid username or email')
-    .isLength({ min: 3 }),
+  body('resetUsernameOrEmail', 'Please enter a valid username or email').isLength({ min: 3 }),
   authController.postReset
 );
 
@@ -52,12 +48,12 @@ router.post(
   '/reset-password',
   [
     body('password')
-      .isLength({ min: 8 })
-      .withMessage('Password should contain atleast 8 characters'),
+      .isLength({ min: 6 })
+      .withMessage('Password should contain atleast 6 characters'),
     // To add regex to validate special characters later
     body('confirmPassword').custom((value, { req }) => {
       if (value !== req.body.password) {
-        throw Error('Password and confirm password doesn\'t match');
+        throw new Error('Password and confirm password does not match');
       }
       return true;
     })
@@ -71,6 +67,5 @@ router.post('/resend', authController.postResendVerification);
 
 // Temporaray path to delete all sesssions
 router.get('/delete', authController.getDeleteSession);
-
 
 module.exports = router;
