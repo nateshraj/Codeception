@@ -103,9 +103,8 @@ exports.postLogin = async (req, res, next) => {
     const match = await bcrypt.compare(req.body.password, user.password);
     if (match) {
       req.session.isLoggedIn = true;
-      req.session.user = user;
+      req.session.userId = user._id; 
       console.log('Logged in successfully');
-
       return res.redirect('/problems');
     }
     else {
@@ -154,7 +153,6 @@ exports.getVerify = async (req, res, next) => {
     user.isVerified = true;
     user.verificationToken = undefined;
     await user.save();
-    req.session.user = user;
 
     if (req.session.isLoggedIn) {
       res.redirect('/problems');
@@ -325,7 +323,8 @@ exports.postLogout = async (req, res, next) => {
 }
 
 exports.postResendVerification = async (req, res, next) => {
-  sendMail(req.session.user, 'Verify');
+  const user = await User.findById(req.session.userId);
+  sendMail(user, 'Verify');
   res.redirect('/problems');
 }
 

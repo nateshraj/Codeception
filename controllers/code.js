@@ -18,15 +18,16 @@ exports.getIndex = (req, res, next) => {
 };
 
 exports.getProblem = async (req, res, next) => {
-  const problem = await Problem.findById(req.params.problemId);
   try {
+    const problem = await Problem.findById(req.params.problemId);
     const startingCode = await fs.readFile(path.join(__dirname, '..', 'problems', `${problem.name}.txt`), 'utf-8');
+    const user = await User.findById(req.session.userId);
 
     res.render('problem', {
       pageTitle: 'Problem',
       isLoggedIn: req.session.isLoggedIn,
       problem: problem,
-      user: req.session.user,
+      user: user,
       startingCode: startingCode,
       mode: '',
       testCase: '',
@@ -40,25 +41,28 @@ exports.getProblem = async (req, res, next) => {
 
 exports.getProblemList = async (req, res, next) => {
   const problems = await Problem.find({});
+  const user = await User.findById(req.session.userId);
   res.render('problem-list', {
     pageTitle: 'Problems',
     isLoggedIn: req.session.isLoggedIn,
     problems: problems,
-    user: req.session.user
+    user: user
   });
 };
 
-exports.getAddProblem = (req, res, next) => {
+exports.getAddProblem = async (req, res, next) => {
+  const user = await User.findById(req.session.userId);
   res.render('add-problem', {
     pageTitle: 'Add Problem',
     isLoggedIn: req.session.isLoggedIn,
-    user: req.session.user
+    user: user
   });
 };
 
 exports.getProfile = async (req, res, next) => {
   const problems = [];
-  for (const solvedProblem of req.session.user.solvedProblems) {
+  const user = await User.findById(req.session.userId);
+  for (const solvedProblem of user.solvedProblems) {
     const problem = await Problem.findById(solvedProblem.problemId);
     problems.push(problem);
   }
@@ -66,7 +70,7 @@ exports.getProfile = async (req, res, next) => {
   res.render('profile', {
     pageTitle: 'Profile',
     isLoggedIn: req.session.isLoggedIn,
-    user: req.session.user,
+    user: user,
     solvedProblems: problems
   });
 };
@@ -83,6 +87,7 @@ exports.postAddProblem = async (req, res, next) => {
 
 exports.postRunCode = async (req, res, next) => {
   const problem = await Problem.findById(req.body.problemId);
+  const user = await User.findById(req.session.userId);
   const functioName = req.body.editorContent.split(' ')[1];
   const testCase = problem.testCases[0];
   let arguments = '';
@@ -125,7 +130,7 @@ exports.postRunCode = async (req, res, next) => {
     pageTitle: 'Problem',
     isLoggedIn: req.session.isLoggedIn,
     problem: problem,
-    user: req.session.user,
+    user: user,
     startingCode: req.body.editorContent,
     mode: 'run',
     testCase: testCase,
@@ -137,6 +142,7 @@ exports.postRunCode = async (req, res, next) => {
 
 exports.postSubmitCode = async (req, res, next) => {
   const problem = await Problem.findById(req.body.problemId);
+  const user = await User.findById(req.session.userId);
   const functioName = req.body.editorContent.split(' ')[1];
   let code = req.body.editorContent;
   let functionCalls = '';
@@ -204,19 +210,17 @@ exports.postSubmitCode = async (req, res, next) => {
 
   const toSubmit = results.every(result => result);
   if (toSubmit) {
-    const currentUser = await User.findById(req.session.user._id);
-    const solvedAlready = currentUser.solvedProblems.find(solvedProblem => solvedProblem.problemId === problem._id.toString());
+    const solvedAlready = user.solvedProblems.find(solvedProblem => solvedProblem.problemId === problem._id.toString());
     if (!solvedAlready) {
-      currentUser.solvedProblems.push({ problemId: problem._id, code: req.body.editorContent });
+      user.solvedProblems.push({ problemId: problem._id, code: req.body.editorContent });
     } else {
-      currentUser.solvedProblems.forEach(solvedProblem => {
+      user.solvedProblems.forEach(solvedProblem => {
         if (solvedProblem.problemId === problem._id.toString()) {
           solvedProblem.code = req.body.editorContent;
         }
       });
     }
-    await currentUser.save();
-    req.session.user = currentUser;
+    await user.save();
   }
 
   console.log(results);
@@ -225,7 +229,7 @@ exports.postSubmitCode = async (req, res, next) => {
     pageTitle: 'Problem',
     isLoggedIn: req.session.isLoggedIn,
     problem: problem,
-    user: req.session.user,
+    user: user,
     startingCode: req.body.editorContent,
     mode: 'submit',
     testCase: '',
@@ -238,7 +242,7 @@ exports.postSubmitCode = async (req, res, next) => {
 
 exports.getLeaderboard = async (req, res, next) => {
   const users = await User.find({}).lean();
-
+  const currentUser = await User.findById(req.session.userId);
   const getProblemPoints = difficulty => {
     switch (difficulty) {
       case "easy":
@@ -274,20 +278,21 @@ exports.getLeaderboard = async (req, res, next) => {
   res.render('leaderboard', {
     pageTitle: 'Leaderboard',
     isLoggedIn: req.session.isLoggedIn,
-    user: req.session.user,
+    user: currentUser,
     users: users
   });
 };
 
 exports.postLastSubmission = async (req, res, next) => {
   const problem = JSON.parse(req.body.problem);
-  const lastSubmittedCode = req.session.user.solvedProblems.find(solvedProblem => solvedProblem.problemId === problem._id).code;
+  const user = await User.findById(req.session.userId);
+  const lastSubmittedCode = user.solvedProblems.find(solvedProblem => solvedProblem.problemId === problem._id).code;
   
   res.render('problem', {
     pageTitle: 'Problem',
     isLoggedIn: req.session.isLoggedIn,
     problem: problem,
-    user: req.session.user,
+    user: user,
     startingCode: lastSubmittedCode,
     mode: '',
     testCase: '',
