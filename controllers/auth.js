@@ -5,7 +5,7 @@ const sendgrid = require('@sendgrid/mail');
 const crypto = require('crypto');
 const mongoose = require('mongoose')
 
-exports.postSignup = async (req, res, next) => {
+exports.postSignup = async (req, res) => {
   const form = {
     username: req.body.username,
     email: req.body.email,
@@ -32,16 +32,13 @@ exports.postSignup = async (req, res, next) => {
       verificationToken: token
     });
     await user.save();
-    console.log('User has been created');
 
     sendMail(user, 'Verify');
 
     res.render('index', {
       pageTitle: 'Signup Testing',
       activeCard: 'login',
-      isLoggedIn: req.session.isLoggedIn,
-      error: '',
-      form: {}
+      isLoggedIn: req.session.isLoggedIn
     });
   } catch (e) {
     if (e.name === 'MongoError' && e.code === 11000) {
@@ -58,15 +55,13 @@ exports.postSignup = async (req, res, next) => {
         isLoggedIn: req.session.isLoggedIn,
         form: form
       });
-      // Re-render the index page with signup card with the above error message
-      // throw Error('test');
     } else {
       throw Error(`Unable to register the user` + e);
     }
   }
 }
 
-exports.postLogin = async (req, res, next) => {
+exports.postLogin = async (req, res) => {
   try {
     const form = {
       usernameOrEmail: req.body.usernameOrEmail
@@ -83,7 +78,6 @@ exports.postLogin = async (req, res, next) => {
       });
     }
 
-    //Validate credentials
     const usernameOrEmail = req.body.usernameOrEmail
     const user = await User.findOne({
       $or: [{ username: usernameOrEmail }, { email: usernameOrEmail }]
@@ -103,8 +97,7 @@ exports.postLogin = async (req, res, next) => {
     const match = await bcrypt.compare(req.body.password, user.password);
     if (match) {
       req.session.isLoggedIn = true;
-      req.session.userId = user._id; 
-      console.log('Logged in successfully');
+      req.session.userId = user._id;
       return res.redirect('/problems');
     }
     else {
@@ -119,26 +112,18 @@ exports.postLogin = async (req, res, next) => {
         form: form
       });
     }
-
-
-    // res.render('index', {
-    //   pageTitle: 'Signup Testing',
-    //   activeCard: 'login'
-    // });
   } catch (e) {
     throw Error(`Unable to login` + e);
   }
 }
 
-
-exports.getVerify = async (req, res, next) => {
+exports.getVerify = async (req, res) => {
   try {
     const verificationToken = req.params.verificationToken;
     const user = await User.findOne({
       verificationToken: verificationToken
     });
     if (!user) {
-      //Add flash message or do something else
       return res.status(400).render('index', {
         pageTitle: 'Codeception',
         activeCard: 'login',
@@ -146,7 +131,6 @@ exports.getVerify = async (req, res, next) => {
           msg: 'Invalid token. Please verify your email again.',
           param: 'verificationToken'
         },
-        form: {},
         isLoggedIn: req.session.isLoggedIn
       });
     }
@@ -161,9 +145,7 @@ exports.getVerify = async (req, res, next) => {
       res.render('index', {
         pageTitle: 'Signup Testing',
         activeCard: 'login',
-        isLoggedIn: req.session.isLoggedIn,
-        error: '',
-        form: {}
+        isLoggedIn: req.session.isLoggedIn
       });
     }
   }
@@ -172,7 +154,7 @@ exports.getVerify = async (req, res, next) => {
   }
 }
 
-exports.postReset = async (req, res, next) => {
+exports.postReset = async (req, res) => {
   try {
     const form = {
       resetUsernameOrEmail: req.body.resetUsernameOrEmail
@@ -180,7 +162,6 @@ exports.postReset = async (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       console.log(errors.array());
-      // Change to show the error message in the modal itself
       return res.status(400).render('index', {
         pageTitle: 'Codeception',
         activeCard: 'login',
@@ -208,23 +189,20 @@ exports.postReset = async (req, res, next) => {
     }
     user.resetToken = resetToken;
     await user.save();
-    console.log('A mail has been sent to reset your password');
 
     sendMail(user, 'Reset');
 
     res.render('index', {
       pageTitle: 'Signup Testing',
       activeCard: 'login',
-      isLoggedIn: req.session.isLoggedIn,
-      error: '',
-      form: {}
+      isLoggedIn: req.session.isLoggedIn
     });
   } catch (e) {
     throw Error(`Unable to reset password` + e);
   }
 }
 
-exports.getResetPassword = async (req, res, next) => {
+exports.getResetPassword = async (req, res) => {
   try {
     const resetToken = req.params.resetToken;
     const user = await User.findOne({
@@ -238,21 +216,15 @@ exports.getResetPassword = async (req, res, next) => {
           msg: 'Invalid token. Please reset your password again.',
           param: 'resetToken'
         },
-        form: {},
         isLoggedIn: req.session.isLoggedIn
       });
     }
-
-
-    // user.resetToken = undefined;
-    // await user.save();
 
     //To change page titles everywhere
     res.render('reset-password', {
       pageTitle: 'Reset Password',
       userId: user._id.toString(),
-      resetToken: resetToken,
-      error: ''
+      resetToken: resetToken
     });
   }
   catch (e) {
@@ -260,13 +232,11 @@ exports.getResetPassword = async (req, res, next) => {
   }
 }
 
-
-exports.postResetPassword = async (req, res, next) => {
+exports.postResetPassword = async (req, res) => {
   try {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       console.log(errors.array());
-      // Change to show the error message in the reset password page
       return res.status(400).render('reset-password', {
         pageTitle: 'Reset Password',
         userId: req.body.userId,
@@ -279,7 +249,6 @@ exports.postResetPassword = async (req, res, next) => {
       _id: req.body.userId
     });
     if (!user) {
-      //Add flash message or do something else
       return res.status(400).render('index', {
         pageTitle: 'Codeception',
         activeCard: 'login',
@@ -287,7 +256,6 @@ exports.postResetPassword = async (req, res, next) => {
           msg: 'Invalid token. Please reset your password again.',
           param: 'resetToken'
         },
-        form: {},
         isLoggedIn: req.session.isLoggedIn
       });
     }
@@ -302,9 +270,7 @@ exports.postResetPassword = async (req, res, next) => {
     res.render('index', {
       pageTitle: 'Signup Testing',
       activeCard: 'login',
-      isLoggedIn: req.session.isLoggedIn,
-      error: '',
-      form: {}
+      isLoggedIn: req.session.isLoggedIn
     });
   }
   catch (e) {
@@ -312,7 +278,7 @@ exports.postResetPassword = async (req, res, next) => {
   }
 }
 
-exports.postLogout = async (req, res, next) => {
+exports.postLogout = async (req, res) => {
   try {
     await req.session.destroy();
     res.redirect('/')
@@ -322,7 +288,7 @@ exports.postLogout = async (req, res, next) => {
   }
 }
 
-exports.postResendVerification = async (req, res, next) => {
+exports.postResendVerification = async (req, res) => {
   const user = await User.findById(req.session.userId);
   sendMail(user, 'Verify');
   res.redirect('/problems');
@@ -354,25 +320,8 @@ async function sendMail(user, type) {
   await sendgrid.send(message);
 }
 
-
-
-exports.getDeleteSession = async (req, res, next) => {
+exports.getDeleteSession = async (req, res) => {
   const collection = await mongoose.connection.db.collection('sessions');
   await collection.deleteMany({});
   console.log('Emptied sessions collection');
-
-
-  // mongoose.connection.db.collection('sessions', function (error, collection) {
-  //   if (error) {
-  //     console.error('Problem retrieving sessions collection:', error);
-  //   } else {
-  //     collection.deleteMany({}, function (error) {
-  //       if (error) {
-  //         console.error('Problem emptying sessions collection:', error);
-  //       } else {
-  //         console.log('Emptied sessions collection');
-  //       }
-  //     });
-  //   }
-  // });
 }

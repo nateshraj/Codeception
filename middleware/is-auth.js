@@ -3,9 +3,7 @@ module.exports = async (req, res, next) => {
     return res.render('index', {
       pageTitle: 'Login',
       activeCard: 'login',
-      isLoggedIn: req.session.isLoggedIn,
-      error: '',
-      form: {}
+      isLoggedIn: req.session.isLoggedIn
     });
   }
   await next();

@@ -56,15 +56,15 @@
                   <form action="/signup" method="POST">
                     <div class="form-group mt-4">
                       <input type="text" class="form-control" placeholder="Username" name="username"
-                        value="<%= form.username %>" required>
+                        value="<% if (locals.form) { %><%= locals.form.username %><% } %>" required>
                     </div>
                     <div class="form-group">
                       <input type="email" class="form-control" placeholder="Email" name="email"
-                        value="<%= form.email %>" required>
+                        value="<% if (locals.form) { %><%= locals.form.email %><% } %>" required>
                     </div>
                     <div class="form-group">
                       <input type="password" class="form-control" placeholder="Password" name="password"
-                        value="<%= form.password %>" required>
+                        value="<% if (locals.form) { %><%= locals.form.password %><% } %>" required>
                     </div>
                     <div class="form-group">
                       <input type="password" class="form-control" placeholder="Confirm Password" name="confirmPassword"
@@ -78,7 +78,7 @@
                   <form action="/login" method="POST">
                     <div class="form-group mt-4">
                       <input type="text" class="form-control" placeholder="Username or Email" name="usernameOrEmail"
-                        value="<%= form.usernameOrEmail %>" required>
+                        value="<% if (locals.form) { %><%= locals.form.usernameOrEmail %><% } %>" required>
                     </div>
                     <div class="form-group">
                       <input type="password" class="form-control" placeholder="Password" name="password" required>
@@ -191,7 +191,7 @@
           <form id="resetPasswordForm" method="POST" action="/reset">
             <div class="form-group">
               <input type="text" class="form-control" placeholder="Username or Email" name="resetUsernameOrEmail"
-              value="<%= form.resetUsernameOrEmail %>" required>
+              value="<% if (locals.form) { %><%= locals.form.resetUsernameOrEmail %><% } %>" required>
             </div>
           </form>
         </div>
@@ -205,7 +205,7 @@
 
   <script>
     $(document).ready(function () {
-      const e = JSON.parse('<%- JSON.stringify(error) %>');
+      const e = JSON.parse('<%- JSON.stringify(locals.error) %>');
       if (e.param === 'resetToken' || e.param === 'verificationToken') {
         alert(e.msg);
       } else {

@@ -193,26 +193,26 @@
 
   
 
-  <% if (mode === 'run') { %>
+  <% if (locals.mode === 'run') { %>
   <br><br>
   <section>
     <div class="container">
-      <div class="alert alert-<%= testCase.output === actualOutput ? 'success' : 'danger' %> alert-dismissible fade show" role="alert">
+      <div class="alert alert-<%= locals.testCase.output === locals.actualOutput ? 'success' : 'danger' %> alert-dismissible fade show" role="alert">
         <h4 class="alert-heading">Sample Test Case</h4>
         <hr>
         <form>
           <fieldset disabled>
             <div class="form-group">
               <label>Input</label>
-              <input type="text" class="form-control" value="<%= testCase.input %>">
+              <input type="text" class="form-control" value="<%= locals.testCase.input %>">
             </div>
             <div class="form-group">
                 <label>Your Output</label>
-                <input type="text" class="form-control" value="<%= actualOutput %>">
+                <input type="text" class="form-control" value="<%= locals.actualOutput %>">
             </div>
             <div class="form-group">
                 <label>Expected Output</label>
-                <input type="text" class="form-control" value="<%= testCase.output %>">
+                <input type="text" class="form-control" value="<%= locals.testCase.output %>">
             </div>
           </fieldset>
         </form>          
@@ -222,7 +222,7 @@
       </div>
     </div>    
   </section>
-  <% } else if (mode === 'submit') { %>
+  <% } else if (locals.mode === 'submit') { %>
     <br><br>
     <section>
       <div class="container">

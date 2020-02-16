@@ -4,20 +4,18 @@ const fs = require('fs').promises;
 const path = require('path');
 const rp = require('request-promise-native');
 
-exports.getIndex = (req, res, next) => {
+exports.getIndex = (req, res) => {
   if (req.session.isLoggedIn) {
     return res.redirect('/problems');
   }
   res.render('index', {
     pageTitle: 'Codeception',
     activeCard: 'signup',
-    isLoggedIn: req.session.isLoggedIn,
-    error: '',
-    form: {}
+    isLoggedIn: req.session.isLoggedIn
   });
 };
 
-exports.getProblem = async (req, res, next) => {
+exports.getProblem = async (req, res) => {
   try {
     const problem = await Problem.findById(req.params.problemId);
     const startingCode = await fs.readFile(path.join(__dirname, '..', 'problems', `${problem.name}.txt`), 'utf-8');
@@ -28,10 +26,7 @@ exports.getProblem = async (req, res, next) => {
       isLoggedIn: req.session.isLoggedIn,
       problem: problem,
       user: user,
-      startingCode: startingCode,
-      mode: '',
-      testCase: '',
-      actualOutput: ''
+      startingCode: startingCode
     });
   }
   catch (e) {
@@ -39,18 +34,19 @@ exports.getProblem = async (req, res, next) => {
   }
 };
 
-exports.getProblemList = async (req, res, next) => {
+exports.getProblemList = async (req, res) => {
   const problems = await Problem.find({});
   const user = await User.findById(req.session.userId);
   res.render('problem-list', {
     pageTitle: 'Problems',
     isLoggedIn: req.session.isLoggedIn,
     problems: problems,
-    user: user
+    user: user,
+    activeNav: 'problems'
   });
 };
 
-exports.getProfile = async (req, res, next) => {
+exports.getProfile = async (req, res) => {
   const problems = [];
   const user = await User.findById(req.session.userId);
   for (const solvedProblem of user.solvedProblems) {
@@ -62,11 +58,12 @@ exports.getProfile = async (req, res, next) => {
     pageTitle: 'Profile',
     isLoggedIn: req.session.isLoggedIn,
     user: user,
-    solvedProblems: problems
+    solvedProblems: problems,
+    activeNav: 'profile'
   });
 };
 
-exports.postRunCode = async (req, res, next) => {
+exports.postRunCode = async (req, res) => {
   const problem = await Problem.findById(req.body.problemId);
   const user = await User.findById(req.session.userId);
   const functioName = req.body.editorContent.split(' ')[1];
@@ -138,8 +135,7 @@ const runCode = async (code) => {
   }
 }
 
-
-exports.postSubmitCode = async (req, res, next) => {
+exports.postSubmitCode = async (req, res) => {
   const problem = await Problem.findById(req.body.problemId);
   const user = await User.findById(req.session.userId);
   const functioName = req.body.editorContent.split(' ')[1];
@@ -204,15 +200,11 @@ exports.postSubmitCode = async (req, res, next) => {
     user: user,
     startingCode: req.body.editorContent,
     mode: 'submit',
-    testCase: '',
-    actualOutput: '',
     results: results
   });
-
-
 };
 
-exports.getLeaderboard = async (req, res, next) => {
+exports.getLeaderboard = async (req, res) => {
   const users = await User.find({}).lean();
   const currentUser = await User.findById(req.session.userId);
   const getProblemPoints = difficulty => {
@@ -251,11 +243,12 @@ exports.getLeaderboard = async (req, res, next) => {
     pageTitle: 'Leaderboard',
     isLoggedIn: req.session.isLoggedIn,
     user: currentUser,
-    users: users
+    users: users,
+    activeNav: 'leaderboard'
   });
 };
 
-exports.postLastSubmission = async (req, res, next) => {
+exports.postLastSubmission = async (req, res) => {
   const problem = JSON.parse(req.body.problem);
   const user = await User.findById(req.session.userId);
   const lastSubmittedCode = user.solvedProblems.find(solvedProblem => solvedProblem.problemId === problem._id).code;
@@ -265,10 +258,6 @@ exports.postLastSubmission = async (req, res, next) => {
     isLoggedIn: req.session.isLoggedIn,
     problem: problem,
     user: user,
-    startingCode: lastSubmittedCode,
-    mode: '',
-    testCase: '',
-    actualOutput: ''
+    startingCode: lastSubmittedCode
   });
-
 };
