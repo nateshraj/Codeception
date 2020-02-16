@@ -9,12 +9,6 @@ router.get('/problems', isAuth, codeController.getProblemList);
 
 router.get('/problem/:problemId', isAuth, codeController.getProblem);
 
-//To add authentication below
-router.get('/add-problem', codeController.getAddProblem);
-
-//To add validations below
-router.post('/add-problem', codeController.postAddProblem);
-
 //To add validations below
 router.post('/run-code', codeController.postRunCode);
 

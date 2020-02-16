@@ -102,30 +102,7 @@
 
       <div class="col-sm-6 pr-2 pt-5">
 
-        <!-- Normal select incase unable to read text from button -->
-        <!-- <div class="form-group">
-            <select class="form-control">
-              <option selected>Javscript</option>
-              <option>Python</option>
-              <option>Java</option>
-            </select>
-          </div> -->
-
         <div class="btn-group">
-          <a href="#" class="ml-2 btn btn btn-light dropdown-toggle rounded" data-toggle="dropdown" id="languageButton">
-            <span>Javascript</span>
-          </a>
-          <ul class="dropdown-menu" id="languageDropDown">
-            <li>
-              <a href="#" class="dropdown-item">Javascript</a>
-            </li>
-            <li>
-              <a href="#" class="dropdown-item">Python</a>
-            </li>
-            <li>
-              <a href="#" class="dropdown-item">Java</a>
-            </li>
-          </ul>
           <% if (user.solvedProblems.find(solvedProblem => solvedProblem.problemId === problem._id.toString() )) { %>
             <a class="btn btn-light rounded ml-1" href="#" data-toggle="modal" data-target="#lastSubmissionModal">
               <i class="fas fa-caret-left"></i>
@@ -319,10 +296,6 @@
     <!--Revert Code modal ends-->
 
 
-
-
-  <!--Need to add footer containing copyright below-->
-
   <!-- <script>
     var editor = ace.edit("editor");
     let editorReference = editor;
@@ -339,13 +312,6 @@
 
   <script src="http://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
     crossorigin="anonymous"></script>
-
-  <script>
-    $("#languageDropDown li a").click(function () {
-      var selText = $(this).text();
-      $(this).parents('.btn-group').find('.dropdown-toggle').html(selText + ' <span class="caret"></span>');
-    });
-  </script>
 
   <script>
     var editor = ace.edit("editor");

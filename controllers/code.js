@@ -50,15 +50,6 @@ exports.getProblemList = async (req, res, next) => {
   });
 };
 
-exports.getAddProblem = async (req, res, next) => {
-  const user = await User.findById(req.session.userId);
-  res.render('add-problem', {
-    pageTitle: 'Add Problem',
-    isLoggedIn: req.session.isLoggedIn,
-    user: user
-  });
-};
-
 exports.getProfile = async (req, res, next) => {
   const problems = [];
   const user = await User.findById(req.session.userId);
@@ -75,53 +66,20 @@ exports.getProfile = async (req, res, next) => {
   });
 };
 
-
-exports.postAddProblem = async (req, res, next) => {
-  const problem = new Problem({
-    name: req.body.problemName,
-    description: req.body.problemDesc
-  });
-  await problem.save();
-  console.log('Problem has been added');
-};
-
 exports.postRunCode = async (req, res, next) => {
   const problem = await Problem.findById(req.body.problemId);
   const user = await User.findById(req.session.userId);
   const functioName = req.body.editorContent.split(' ')[1];
   const testCase = problem.testCases[0];
-  let arguments = '';
-  for (let [index, input] of testCase.input.entries()) {
-    if (typeof input === 'string') {
-      arguments += `'${input}'`;
-    } else if (Array.isArray(input)) {
-      arguments += `[${input}]`;
-    } else {
-      arguments += `${input}`;
-    }
-    if (index !== testCase.input.length - 1) {
-      arguments += ',';
-    }
-  }
+  const arguments = await getArguments(testCase);
   const code = req.body.editorContent + `\nconsole.log(${functioName}(${arguments}));`;
   console.log('----------------');
   console.log(code);
   console.log('----------------');
-  const program = {
-    script: code,
-    language: "nodejs",
-    versionIndex: "2",
-    clientId: process.env.CLIENT_ID,
-    clientSecret: process.env.CLIENT_SECRET
-  };
-  const response = await rp({
-    url: process.env.PROGRAM_API,
-    method: "POST",
-    json: program
-  });
-  console.log(response);
-  // const actualOutput = response.output.replace('\n', '');
-  let actualOutput = response.output.replace(new RegExp('\n$'), '');
+  const output = await runCode(code);
+  console.log(output);
+  // const actualOutput = output.replace('\n', '');
+  let actualOutput = output.replace(new RegExp('\n$'), '');
   // console.log(actualOutput);
   actualOutput = actualOutput.replace('\n', ' ')
   const result = actualOutput === testCase.output;
@@ -138,18 +96,8 @@ exports.postRunCode = async (req, res, next) => {
   });
 };
 
-
-
-exports.postSubmitCode = async (req, res, next) => {
-  const problem = await Problem.findById(req.body.problemId);
-  const user = await User.findById(req.session.userId);
-  const functioName = req.body.editorContent.split(' ')[1];
-  let code = req.body.editorContent;
-  let functionCalls = '';
-  const results = [];
-  const expectedOutputs = [];
-
-  for (let testCase of problem.testCases) {
+const getArguments = async (testCase) => {
+  try {
     let arguments = '';
     for (let [index, input] of testCase.input.entries()) {
       if (typeof input === 'string') {
@@ -163,10 +111,46 @@ exports.postSubmitCode = async (req, res, next) => {
         arguments += ',';
       }
     }
+    return arguments;
+  } catch (e) {
+    console.log(`Unable to get arguments - ${e}`);
+  }
+}
 
+const runCode = async (code) => {
+  try {
+    const program = {
+      script: code,
+      language: "nodejs",
+      versionIndex: "2",
+      clientId: process.env.CLIENT_ID,
+      clientSecret: process.env.CLIENT_SECRET
+    };
+    const response = await rp({
+      url: process.env.PROGRAM_API,
+      method: "POST",
+      json: program
+    });
+    // console.log(response);
+    return response.output;
+  } catch (e) {
+    console.log(`Unable to run code - ${e}`);
+  }
+}
+
+
+exports.postSubmitCode = async (req, res, next) => {
+  const problem = await Problem.findById(req.body.problemId);
+  const user = await User.findById(req.session.userId);
+  const functioName = req.body.editorContent.split(' ')[1];
+  let code = req.body.editorContent;
+  let functionCalls = '';
+  const results = [];
+  const expectedOutputs = [];
+
+  for (let testCase of problem.testCases) {
+    const arguments = await getArguments(testCase);
     functionCalls += `\nconsole.log(${functioName}(${arguments}));`;
-
-
     expectedOutputs.push(testCase.output);
   }
 
@@ -174,23 +158,11 @@ exports.postSubmitCode = async (req, res, next) => {
   console.log('@@@@@@@@@@@@@@@@@@');
   console.log(code);
   console.log('@@@@@@@@@@@@@@@@@@');
-  const program = {
-    script: code,
-    language: "nodejs",
-    versionIndex: "2",
-    clientId: process.env.CLIENT_ID,
-    clientSecret: process.env.CLIENT_SECRET
-  };
-  const response = await rp({
-    url: process.env.PROGRAM_API,
-    method: "POST",
-    json: program
-  });
-  console.log('###########');
-  console.log(response);
-  console.log('###########');
 
-  let actualOutputs = response.output.replace(new RegExp('\n$'), '');
+  const output = await runCode(code);
+  // console.log(output);
+
+  let actualOutputs = output.replace(new RegExp('\n$'), '');
   actualOutputs = actualOutputs.split('\n');
   console.log('&&&&&&&&&&&&&&&');
   console.log(actualOutputs);
@@ -287,7 +259,7 @@ exports.postLastSubmission = async (req, res, next) => {
   const problem = JSON.parse(req.body.problem);
   const user = await User.findById(req.session.userId);
   const lastSubmittedCode = user.solvedProblems.find(solvedProblem => solvedProblem.problemId === problem._id).code;
-  
+
   res.render('problem', {
     pageTitle: 'Problem',
     isLoggedIn: req.session.isLoggedIn,

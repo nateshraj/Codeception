@@ -94,7 +94,10 @@
             <div class="col-sm-6">
               <div class="card border-<%= problems[i].difficulty === 'hard' ? 'danger' : problems[i].difficulty === 'medium' ? 'warning' : 'success' %>">
                 <div class="card-header border-<%= problems[i].difficulty === 'hard' ? 'danger' : problems[i].difficulty === 'medium' ? 'warning' : 'success' %>">
-                  <h5 class="card-title mb-0"><%= problems[i].name %></h5>
+                  <h5 class="card-title mb-0 float-left"><%= problems[i].name %></h5>
+                  <% if (user.solvedProblems.find(solvedProblem => solvedProblem.problemId === problems[i]._id.toString())) { %>
+                    <span class="badge badge-pill badge-success float-right">Solved</span>
+                  <% } %>
                 </div>
                 <div class="card-body">
                   <p class="card-text"><%= problems[i].description %></p>
@@ -106,7 +109,10 @@
           <div class="col-sm-6">
             <div class="card border-<%= problems[i].difficulty === 'hard' ? 'danger' : problems[i].difficulty === 'medium' ? 'warning' : 'success' %>">
               <div class="card-header border-<%= problems[i].difficulty === 'hard' ? 'danger' : problems[i].difficulty === 'medium' ? 'warning' : 'success' %>">
-                <h5 class="card-title mb-0"><%= problems[i].name %></h5>
+                <h5 class="card-title mb-0 float-left"><%= problems[i].name %></h5>
+                <% if (user.solvedProblems.find(solvedProblem => solvedProblem.problemId === problems[i]._id.toString())) { %>
+                  <span class="badge badge-pill badge-success float-right">Solved</span>
+                <% } %>
               </div>
               <div class="card-body">
                 <p class="card-text"><%= problems[i].description %></p>
