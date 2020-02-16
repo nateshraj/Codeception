@@ -47,8 +47,8 @@
               <% solvedProblems.forEach(solvedProblem => { %>
               <li class="list-group-item">
                 <span class="float-left"><%= solvedProblem.name %></span>
-                <span class="badge badge-primary badge-pill float-right">10</span>
-                <span class="badge badge-primary badge-pill float-right mr-2">Javascript</span>
+                <span class="badge badge-<%= solvedProblem.difficulty === 'hard' ? 'danger' : solvedProblem.difficulty === 'medium' ? 'warning' : 'success' %> badge-pill float-right"><%= solvedProblem.difficulty === 'hard' ? '30' : solvedProblem.difficulty === 'medium' ? '20' : '10' %></span>
+                <span class="badge badge-<%= solvedProblem.difficulty === 'hard' ? 'danger' : solvedProblem.difficulty === 'medium' ? 'warning' : 'success' %> badge-pill float-right mr-2"><%= solvedProblem.difficulty %></span>
               </li>
               <% }) %>
             </ul>
