@@ -98,7 +98,9 @@ exports.postLogin = async (req, res) => {
     if (match) {
       req.session.isLoggedIn = true;
       req.session.userId = user._id;
-      return res.redirect('/problems');
+      req.session.save(function (err) {
+        res.redirect('/problems');
+      })
     }
     else {
       return res.status(400).render('index', {

@@ -284,7 +284,7 @@
           All your code will be discarded. Are you sure?<br><br>
           <a href="#" class="btn btn-danger" data-dismiss="modal">Cancel</a>
           <form action="/last-submission" method="POST" class="d-inline">
-            <input type="hidden" name="problem" value="<%= JSON.stringify(problem) %>">
+            <input type="hidden" name="problemId" value="<%= problem._id %>">
             <button type="submit" class="btn btn-success">
               Retrieve last submission
             </button>

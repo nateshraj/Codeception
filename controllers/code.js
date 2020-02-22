@@ -249,9 +249,9 @@ exports.getLeaderboard = async (req, res) => {
 };
 
 exports.postLastSubmission = async (req, res) => {
-  const problem = JSON.parse(req.body.problem);
+  const problem = await Problem.findById(req.body.problemId);
   const user = await User.findById(req.session.userId);
-  const lastSubmittedCode = user.solvedProblems.find(solvedProblem => solvedProblem.problemId === problem._id).code;
+  const lastSubmittedCode = user.solvedProblems.find(solvedProblem => solvedProblem.problemId === problem._id.toString()).code;
 
   res.render('problem', {
     pageTitle: 'Problem',
